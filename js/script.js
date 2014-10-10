@@ -2,9 +2,8 @@ $(document).ready(function () {
 	$(".noJs").hide();
 
 	var forrigeTall = 0;
-	var antallTrekt = 0;
 
-	$("#trekk").click(function (e) {
+	function trekkTall(e) {
 		e.preventDefault();
 
 		$.getJSON("json.php?valg=trekk&forrige=" + forrigeTall, function (data) {
@@ -16,17 +15,29 @@ $(document).ready(function () {
 				}
 			}
 		});
+	}
+
+	$("#trekk").click(function (e) {
+		trekkTall(e);
 	});
 
-	$("#kontroller").click(function (e) {
+	$(document).keyup(function (e) {
+		var hasFocus = $("#kontrollnr").is(":focus");
+		if (e.keyCode == 13 && !hasFocus) {
+			trekkTall(e);
+		}
+	});
+
+	function kontrollerBlokk(e) {
 		e.preventDefault();
 
 		var kontrollnr = $("#kontrollnr").val();
 		$.getJSON("json.php?valg=kontroll&kontrollnr=" + kontrollnr, function (data) {
 			if (data.status) {
 				if (data.vant) {
-					$("#sjekk").html(data.html).prepend("<p>Vinnertall: " + 
-					data.vinnertall + ".</p>").modal({clickClose: false});
+					$("#sjekk").html(data.html).prepend("<p>Spiller har bingo. " + 
+						"Vinnertall: " + data.vinnertall + ".</p>")
+						.modal({clickClose: false});
 				} else {
 					$("#sjekk").html(data.html).prepend("<p>Har " + 
 						"<strong>IKKE</strong> bingo.</p>")
@@ -34,7 +45,27 @@ $(document).ready(function () {
 				}
 			}
 		});
+	}
+
+	$("#kontroller").click(function (e) {
+		kontrollerBlokk(e);	
 	});
+
+	$("#kontrollnr").keyup(function (e) {
+		if (e.keyCode == 13) {
+			kontrollerBlokk(e);
+		}
+	});
+
+	function antallTrekt() {
+		var antall = 0;
+		$("#trektTabell td").each(function () {
+			if ($(this).text() != "") {
+				antall++;
+			}
+		});
+		return antall;
+	}
 
 	function nyttTall(tall) {
 		$("#tall-" + tall).text(tall);
@@ -43,7 +74,6 @@ $(document).ready(function () {
 		var separator = ($("#trekt").text() == "") ? "" : ", ";
 		$("#trekt").prepend(tall + separator);
 
-		antallTrekt++;
-		$("#antall").text(antallTrekt);
+		$("#antall").text(antallTrekt());
 	}
 });
