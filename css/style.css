@@ -7,7 +7,6 @@ body {
 #trektTabell {
 	border-collapse: collapse;
 	margin: 1em auto;
-	width: 19em;
 }
 	#trektTabell td {
 		width: 2em;
@@ -57,8 +56,7 @@ body {
 
 #trekt {
 	width: 56.25em; /* 900px / 16px */
-	overflow: scroll;
-	height: 2.5em;
+	min-height: 2.5em;
 	margin: 1em auto;
 	border: 0.0625em solid black; /* 1px / 16px */
 }

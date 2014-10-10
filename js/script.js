@@ -24,8 +24,14 @@ $(document).ready(function () {
 		var kontrollnr = $("#kontrollnr").val();
 		$.getJSON("json.php?valg=kontroll&kontrollnr=" + kontrollnr, function (data) {
 			if (data.status) {
-				$("#sjekk").html(data.html).prepend("<p>Vinnertall: " + 
-					data.vinnertall + "</p>");
+				if (data.vant) {
+					$("#sjekk").html(data.html).prepend("<p>Vinnertall: " + 
+					data.vinnertall + ".</p>").modal({clickClose: false});
+				} else {
+					$("#sjekk").html(data.html).prepend("<p>Har " + 
+						"<strong>IKKE</strong> bingo.</p>")
+						.modal({clickClose: false});
+				}
 			}
 		});
 	});
