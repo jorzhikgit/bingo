@@ -43,6 +43,10 @@ class Omgang {
 
 	public function trekk() {
 		$tall = array_pop($this->tall);
+		if (is_null($tall)) {
+			return null;
+		}
+		
 		$this->tidligereTall[] = $tall;
 
 		return $tall;
@@ -154,17 +158,17 @@ class Omgang {
 		$sql = "SELECT * FROM omganger ORDER BY omgangid DESC LIMIT 1";
 		$data = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
 
-		if (empty($data['tall']) || is_null($data['tall']) || $data['tall'] === '') {
-			$this->tall = range(1, 90);
-			shuffle($this->tall);
-		} else {
-			$this->tall = explode(';', $data['tall']);
-		}
-
 		if (empty($data['tidligereTall']) || is_null($data['tidligereTall']) || $data['tidligereTall'] === '') {
 			$this->tidligereTall = [];
 		} else {
 			$this->tidligereTall = explode(';', $data['tidligereTall']);
+		}
+
+		if ((empty($data['tall']) || is_null($data['tall']) || $data['tall'] === '') && empty($this->tidligereTall)) {
+			$this->tall = range(1, 90);
+			shuffle($this->tall);
+		} else {
+			$this->tall = explode(';', $data['tall']);
 		}
 
 		$this->navn = $data['navn'];

@@ -33,7 +33,7 @@ if ($_GET['valg'] == "trekk") {
 	$tallene[] = $omgang->trekk();
 
 	$dbTall = implode(';', $omgang->hentTallene());
-	$dbTidligereTall = implode(";", $omgang->hentTidligereTall());
+	$dbTidligereTall = (empty($omgang->hentTidligereTall())) ? null : implode(";", $omgang->hentTidligereTall());
 
 	$stmt = $db->prepare("UPDATE omganger SET tall = :tall, tidligereTall = :tidligereTall WHERE omgangid = :omgangid");
 	$stmt->bindParam(":tall", $dbTall, PDO::PARAM_STR);
