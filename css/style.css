@@ -1,0 +1,125 @@
+body {
+	font-size: 16px;
+	width: 960px;
+	margin: 0 auto;
+}
+
+#trektTabell {
+	border-collapse: collapse;
+	margin: 1em auto;
+	width: 19em;
+}
+	#trektTabell td {
+		width: 2em;
+		height: 2em;
+		border: 0.0625em solid black; /* 1px / 16px */
+		text-align: center;
+		vertical-align: middle;
+		font-weight: bold;
+	}
+
+	#trektTabell tr {
+		background-color: #FFDC00;
+	}
+
+#trekning {
+	width: 26em;
+	margin: 1em auto;
+}
+
+	#talletErWrapper {
+		margin: 1em;
+		float: left;
+		width: 5.5em;
+	}
+
+		#talletEr {
+			width: 1.8em;
+			height: 1.8em;
+			background-color: #FFDC00;
+			font-size: 300%;
+			font-weight: bold;
+			text-align: center;
+			vertical-align: middle;
+			display: table-cell;
+			border: 0.02083333333333em solid black; /* 1px / 48 px */
+		}
+
+	#trekk {
+		margin: 0.5em;
+		margin-top: 0.75em;
+		width: 7em;
+		height: 1em;
+		float: right;
+		font-size: 200%;
+		padding: 0.5em;
+	}
+
+#trekt {
+	width: 56.25em; /* 900px / 16px */
+	overflow: scroll;
+	height: 2.5em;
+	margin: 1em auto;
+	border: 0.0625em solid black; /* 1px / 16px */
+}
+
+#topp {
+	width: 56.25em; /* 900px / 16px */
+	margin: 1em auto;
+}
+	#antallWrapper {
+		margin: 0;
+		font-size: 150%;
+		float: left;
+	}
+
+	#kontrollnrWrapper {
+		margin: 0;
+		font-size: 150%;
+		float: right;
+	}
+
+		#kontrollnr {
+			font-size: 100%;
+			width: 4em;
+			padding: 0.2em;
+			margin: 0.1em;
+		}
+
+		#kontroller {
+			padding: 0.2em;
+			margin: 0.2em;
+		}
+
+.cf {
+	overflow: auto;
+	zoom: 1;
+}
+
+.button {
+	display: inline-block;
+	text-align: center;
+	color: black;
+	border: 0.0625em solid black;
+}
+	.button:link, .button:visited, .button:hover, .button:active {
+		text-decoration: none;
+	}
+
+	.button:hover, .button:active {
+		background-color: rgba(255, 220, 0, 0.2);
+	}
+
+#sjekk .trekt {
+	background-color: green;
+	color: white;
+}
+
+#sjekk table {
+	border-collapse: collapse;
+}
+
+#sjekk td {
+	width: 2em;
+	border: 1px solid black;
+}
