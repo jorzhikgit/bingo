@@ -26,6 +26,7 @@ header('Content-Type: text/html; charset=utf-8');
 require_once "Blokk.php";
 require_once "Omgang.php";
 require_once "Hefte.php";
+require_once "Side.php";
 
 // $blokk = new Blokk(1);
 // $blokk->lagBlokk();
@@ -76,7 +77,10 @@ require_once "Hefte.php";
 // $blokk->lagBlokkFraTekst(";.;;14;;.;;34;;40;;54;;.;;.;;80;-;.;;17;;23;;35;;.;;.;;61;;70;;82;-;.;;18;;.;;.;;48;;.;;.;");
 // print_r($blokk->hentBlokk());
 
-$blokk = new Blokk(1);
-$blokk->lagBlokk();
-print_r($blokk->hentBlokk());
+// $blokk = new Blokk(1);
+// $blokk->lagBlokk();
+// print_r($blokk->hentBlokk());
 
+$side = new Side(10000);
+$side->lagSide();
+print_r($side->hentSide());
