@@ -23,10 +23,12 @@ if ($_GET['valg'] == "trekk") {
 	$omgangid = $omgang->hentFraDb($db);
 
 	$tidligereTall = $omgang->hentTidligereTall();
-
-	$sisteTallPosisjon = array_search($_GET['forrige'], $tidligereTall);
-	$tallene = array_slice($tidligereTall, $sisteTallPosisjon);
-	array_shift($tallene);
+	
+	if (!empty($tidligereTall)) {
+		$sisteTallPosisjon = array_search($_GET['forrige'], $tidligereTall);
+		$tallene = array_slice($tidligereTall, $sisteTallPosisjon);
+		array_shift($tallene);
+	}
 
 	$tallene[] = $omgang->trekk();
 
