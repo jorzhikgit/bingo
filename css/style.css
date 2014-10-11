@@ -4,6 +4,10 @@ body {
 	margin: 0 auto;
 }
 
+p {
+	margin-bottom: 0;
+}
+
 #trektTabell {
 	border-collapse: collapse;
 	margin: 1em auto;
@@ -56,7 +60,7 @@ body {
 
 #trekt {
 	width: 56.25em; /* 900px / 16px */
-	min-height: 2.5em;
+	height: 4em;
 	margin: 1em auto;
 	border: 0.0625em solid black; /* 1px / 16px */
 }
@@ -108,16 +112,35 @@ body {
 		background-color: rgba(255, 220, 0, 0.2);
 	}
 
-#sjekk .trekt {
-	background-color: green;
-	color: white;
-}
+#sjekk {
+	font-size: 130%; /* 20.8px */
+}	
 
-#sjekk table {
-	border-collapse: collapse;
-}
+	#sjekk .trekt {
+		background-color: green;
+		color: white;
+	}
 
-#sjekk td {
-	width: 2em;
-	border: 1px solid black;
-}
+	#sjekk table {
+		border-collapse: collapse;
+		margin-top: 0.5em;
+	}
+
+	#sjekk td {
+		width: 2em;
+		height: 2em;
+		vertical-align: middle;
+		text-align: center;
+		border: 0.0625em solid black; /* 1px / 16px */
+	}
+
+	#sjekk input {
+		font-size: 100%;
+	}
+
+	#sjekk .button {
+		margin: 0.5em;
+		margin-left: 0;
+		padding: 0.5em;
+		font-size: 115%;
+	}

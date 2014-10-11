@@ -1,4 +1,5 @@
 <?php
+require_once "Blokk.php";
 
 class Side {
 	public function __construct($kontrollnr) {
@@ -11,38 +12,23 @@ class Side {
 		$this->blokker = [];
 	}
 
-	public function lagSide() {
-		$tallbinge = range(1, 90);
-		shuffle($tallbinge);
-
-		$blokker = [];
-		foreach (range(0, 5) as $blokknr) {
-			$blokker[] = [];
-			
-			foreach (range(0, 2) as $radnr) {
-				$rad = [null, null, null, null, null, null, null, null, null];
-				foreach (range(0, 4) as $tallnr) {
-					$tallValgt = false;
-					while (!$tallValgt) {
-						$tall = array_shift($tallbinge);
-						$tier = floor($tall / 10);
-
-						if (is_null($rad[$tier])) {
-							$rad[$tier] = $tall;
-							$tallValgt = true;
-						} else {
-							$tallbinge[] = $tall;
-						}
-					}
-				}
-
-				$blokker[$blokknr][$radnr] = $rad;
-			}
+	public function hentSide() {
+		$resultat = [];
+		foreach($this->blokker as $blokk) {
+			$resultat[] = $blokk->hentBlokk();
 		}
-		$this->blokker = $blokker;
+		return $resultat;
 	}
 
-	public function hentSide() {
-		return $this->blokker;
+	public function leggTilBlokk(Blokk $blokk) {
+		$this->blokker[] = $blokk;
+	}
+
+	public function hentKontrollnumre() {
+		$resultat = [];
+		foreach($this->blokker as $blokk) {
+			$resultat[] = $blokk->hentKontrollnr();
+		}
+		return $resultat;
 	}
 }
