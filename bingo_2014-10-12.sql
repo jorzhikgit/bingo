@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.39-1)
 # Database: bingo
-# Generation Time: 2014-10-11 18:58:16 +0000
+# Generation Time: 2014-10-11 22:50:25 +0000
 # ************************************************************
 
 
@@ -118,7 +118,7 @@ INSERT INTO `kunder` (`kundeid`, `navn`, `stedid`)
 VALUES
 	(1,'Adrian K. Eriksen',1),
 	(2,'Marius Flage',2),
-	(4,'Reinert Årseth',1),
+	(4,'Kari Nordmann',1),
 	(5,'Navn Navnesen',5);
 
 /*!40000 ALTER TABLE `kunder` ENABLE KEYS */;
@@ -132,22 +132,49 @@ DROP TABLE IF EXISTS `omganger`;
 
 CREATE TABLE `omganger` (
   `omgangid` int(11) NOT NULL AUTO_INCREMENT,
+  `kveldid` int(11) NOT NULL,
   `type` char(1) NOT NULL,
   `navn` tinyint(4) NOT NULL,
   `tall` text,
   `tidligereTall` text,
-  `antallRader` tinyint(4) DEFAULT NULL,
+  `antallRader` tinyint(4) NOT NULL,
   PRIMARY KEY (`omgangid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 LOCK TABLES `omganger` WRITE;
 /*!40000 ALTER TABLE `omganger` DISABLE KEYS */;
 
-INSERT INTO `omganger` (`omgangid`, `type`, `navn`, `tall`, `tidligereTall`, `antallRader`)
+INSERT INTO `omganger` (`omgangid`, `kveldid`, `type`, `navn`, `tall`, `tidligereTall`, `antallRader`)
 VALUES
-	(1,'V',1,'22;38;2;60;61;70;53;45;8;82;31;11;33;72;68;1;85;32;65;51;25','76;79;56;75;20;71;10;13;64;89;19;83;58;40;69;41;5;59;48;90;7;4;80;37;67;14;86;27;52;57;35;77;47;81;30;3;55;34;84;42;88;21;78;16;43;73;39;46;29;23;44;50;87;9;12;6;15;49;18;66;17;74;63;62;28;36;26;24;54',1);
+	(1,1,'V',1,'22;38;2;60;61;70;53;45;8;82;31;11;33;72;68;1;85;32;65;51','76;79;56;75;20;71;10;13;64;89;19;83;58;40;69;41;5;59;48;90;7;4;80;37;67;14;86;27;52;57;35;77;47;81;30;3;55;34;84;42;88;21;78;16;43;73;39;46;29;23;44;50;87;9;12;6;15;49;18;66;17;74;63;62;28;36;26;24;54;25',2);
 
 /*!40000 ALTER TABLE `omganger` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table kvelder
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `kvelder`;
+
+CREATE TABLE `kvelder` (
+  `kveldid` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `dato` date NOT NULL,
+  `lykketall` tinyint(3) unsigned NOT NULL,
+  `lykkepott` int(11) unsigned NOT NULL,
+  `lykkepottUtdelt` char(1) NOT NULL DEFAULT 'N',
+  PRIMARY KEY (`kveldid`),
+  UNIQUE KEY `dato` (`dato`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+LOCK TABLES `kvelder` WRITE;
+/*!40000 ALTER TABLE `kvelder` DISABLE KEYS */;
+
+INSERT INTO `kvelder` (`kveldid`, `dato`, `lykketall`, `lykkepott`, `lykkepottUtdelt`)
+VALUES
+	(1,'2014-10-11',88,7000,'N');
+
+/*!40000 ALTER TABLE `kvelder` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
@@ -242,6 +269,7 @@ CREATE TABLE `vinnere` (
   `igjenUtbetale` int(11) NOT NULL,
   `utbetaling` int(11) NOT NULL,
   `statusid` int(11) NOT NULL,
+  `antallRader` int(11) NOT NULL,
   PRIMARY KEY (`vinnerid`),
   KEY `fk_vinnere_statuser1_idx` (`statusid`),
   KEY `fk_vinnere_kunder1_idx` (`kundeid`),
@@ -251,14 +279,14 @@ CREATE TABLE `vinnere` (
 LOCK TABLES `vinnere` WRITE;
 /*!40000 ALTER TABLE `vinnere` DISABLE KEYS */;
 
-INSERT INTO `vinnere` (`vinnerid`, `kundeid`, `kontrollnr`, `dato`, `omgangid`, `igjenUtbetale`, `utbetaling`, `statusid`)
+INSERT INTO `vinnere` (`vinnerid`, `kundeid`, `kontrollnr`, `dato`, `omgangid`, `igjenUtbetale`, `utbetaling`, `statusid`, `antallRader`)
 VALUES
-	(1,1,10000,'2014-10-11',1,500,500,5),
-	(2,2,10001,'2014-10-11',1,250,250,5),
-	(3,1,10002,'2014-10-11',1,200,200,5),
-	(4,4,10003,'2014-10-11',1,300,300,5),
-	(5,5,10004,'2014-10-11',1,400,400,5),
-	(6,2,10005,'2014-10-11',1,550,550,5);
+	(1,1,10000,'2014-10-11',1,500,500,5,1),
+	(2,2,10001,'2014-10-11',1,250,250,5,1),
+	(3,1,10002,'2014-10-11',1,200,200,5,1),
+	(4,4,10003,'2014-10-11',1,300,300,5,2),
+	(5,5,10004,'2014-10-11',1,400,400,5,2),
+	(6,2,10005,'2014-10-11',1,550,550,5,2);
 
 /*!40000 ALTER TABLE `vinnere` ENABLE KEYS */;
 UNLOCK TABLES;
