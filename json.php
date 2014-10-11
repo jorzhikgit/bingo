@@ -30,7 +30,14 @@ if ($_GET['valg'] == "trekk") {
 		array_shift($tallene);
 	}
 
-	$tallene[] = $omgang->trekk();
+	$trekt = $omgang->trekk();
+	if (is_null($trekt) && !empty($tallene)) {
+		send(["status" => true, "tallene" => $tallene]);
+	} elseif (is_null($trekt)) {
+		send(["status" => false, "error" => "Ikke  mer å trekke."]);
+	}
+
+	$tallene[] = $trekt;
 
 	$dbTall = implode(';', $omgang->hentTallene());
 	$dbTidligereTall = (empty($omgang->hentTidligereTall())) ? null : implode(";", $omgang->hentTidligereTall());

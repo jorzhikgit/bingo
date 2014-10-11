@@ -43,10 +43,10 @@ class Omgang {
 
 	public function trekk() {
 		$tall = array_pop($this->tall);
-		if (is_null($tall)) {
+		if (is_null($tall) || $tall === "") {
 			return null;
 		}
-		
+
 		$this->tidligereTall[] = $tall;
 
 		return $tall;
