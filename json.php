@@ -27,6 +27,9 @@ if ($_GET['valg'] == "trekk") {
 	if (!empty($tidligereTall)) {
 		$sisteTallPosisjon = array_search($_GET['forrige'], $tidligereTall);
 		$tallene = array_slice($tidligereTall, $sisteTallPosisjon);
+	}
+
+	if ($tallene[0] == $_GET['forrige']) {
 		array_shift($tallene);
 	}
 
