@@ -38,15 +38,15 @@ def main(arg):
     cards = [ [ [] for _ in range(9) ] for _ in range(6) ]
     
     # generate the number seed
-    numbers = [range(1,10),
-               range(10,20),
-               range(20,30),
-               range(30,40),
-               range(40,50),
-               range(50,60),
-               range(60,70),
-               range(70,80),
-               range(80,91)]
+    numbers = [range( 1, 10),
+               range(10, 20),
+               range(20, 30),
+               range(30, 40),
+               range(40, 50),
+               range(50, 60),
+               range(60, 70),
+               range(70, 80),
+               range(80, 91)]
 
     # shuffle the individual number columns
     for x in numbers:
@@ -60,7 +60,7 @@ def main(arg):
     # just pick a random card and place last 8th column number there
     cards[random.randint(0, len(cards) - 1)][8].append(numbers[8].pop())
 
-    # now perform 4 iterations over columns of number and place then randomly
+    # now perform 4 iterations over columns of numbers and place them randomly
     for x in range(0, 4):
         
         for y in range(0, len(numbers)):
@@ -102,54 +102,51 @@ def main(arg):
             card[y] = sorted(card[y])
 
     for x in range(0, len(cards)):
-        row1 = row2 = row3 = 0
+        rowcount = [0, 0, 0]
+        card = cards[x]
 
-        # first iteration, all the 3 columns
-        for y in range(0, len(cards[x])):
-            if len(cards[x][y]) == 3:
-                matrix[x * 3][y]     = cards[x][y].pop(0)
-                matrix[x * 3 + 1][y] = cards[x][y].pop(0)
-                matrix[x * 3 + 2][y] = cards[x][y].pop(0)
-                row1 += 1
-                row2 += 1
-                row3 += 1
+        for y in range(0, len(card)):
+            if len(card[y]) == 3:
+                col = card[y]
+                matrix[x * 3 + 0][y] = col.pop(0)
+                matrix[x * 3 + 1][y] = col.pop(0)
+                matrix[x * 3 + 2][y] = col.pop(0)
+                rowcount[0] += 1
+                rowcount[1] += 1
+                rowcount[2] += 1
 
         # second iteration, all the 2-columns
         count = 0
+
         # make the order in which we spread the 2-column a bit more random
-        for y in range(0, len(cards[x])):
-            if len(cards[x][y]) == 2:
+        for y in range(0, len(card)):
+            if len(card[y]) == 2:
+                col = card[y]
                 if count == 0:
-                    matrix[x * 3][y] = cards[x][y].pop(0)
-                    matrix[x * 3 + 1][y] = cards[x][y].pop(0)
-                    row1 += 1
-                    row2 += 1
+                    matrix[x * 3 + 0][y] = col.pop(0)
+                    matrix[x * 3 + 1][y] = col.pop(0)
+                    rowcount[0] += 1
+                    rowcount[1] += 1
                     count = 1
                 elif count == 1:
-                    matrix[x * 3 + 1][y] = cards[x][y].pop(0)
-                    matrix[x * 3 + 2][y] = cards[x][y].pop(0)
-                    row2 += 1
-                    row3 += 1
+                    matrix[x * 3 + 1][y] = col.pop(0)
+                    matrix[x * 3 + 2][y] = col.pop(0)
+                    rowcount[1] += 1
+                    rowcount[2] += 1
                     count = 2
                 elif count == 2:
-                    matrix[x * 3][y] = cards[x][y].pop(0)
-                    matrix[x * 3 + 2][y] = cards[x][y].pop(0)
-                    row1 += 1
-                    row3 += 1
+                    matrix[x * 3 + 0][y] = col.pop(0)
+                    matrix[x * 3 + 2][y] = col.pop(0)
+                    rowcount[0] += 1
+                    rowcount[2] += 1
                     count = 0
 
-        # third and last iteration with all the singles
-        for y in range(0, len(cards[x])):
-            if len(cards[x][y]) == 1:
-                if row1 <= row2 and row1 <= row3:
-                    matrix[x * 3][y] = cards[x][y].pop(0)
-                    row1 += 1
-                elif row2 <= row1 and row2 <= row3:
-                    matrix[x * 3 + 1][y] = cards[x][y].pop(0)
-                    row2 += 1
-                elif row3 <= row1 and row3 <= row2:
-                    matrix[x * 3 + 2][y] = cards[x][y].pop(0)
-                    row3 += 1
+        for y in range(0, len(card)):
+            if len(card[y]) == 1:
+                # find the index of the lowest rowcount
+                row = rowcount.index(min(rowcount))
+                matrix[x * 3 + row][y] = card[y].pop(0)
+                rowcount[row] += 1
 
     output_card(matrix)
 
