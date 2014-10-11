@@ -2,7 +2,7 @@
 require_once "Blokk.php";
 
 class Omgang {
-	public function __construct($navn, $type, $lykketall, $lykkepott) {
+	public function __construct($navn, $type, $lykketall, $lykkepott, $tall = [], $tidligereTall = [], $rader = 1, $vinnere = []) {
 		if ($navn >= 1 && $navn <= 5) {
 			$this->navn = $navn;
 		} elseif ($type == "P") {
@@ -29,16 +29,24 @@ class Omgang {
 			throw new Exception("Lykkepotten må være mellom 1000 og 20 000 kr.");
 		}
 
-		$this->tall = range(1, 90);
-		shuffle($this->tall);
-
-		$this->tidligereTall = [];
-		$this->vinnere = [];
-		$this->rader = 1;
+		if (empty($tall)) {
+			$this->tall = range(1, 90);
+			shuffle($this->tall);
+		} else {
+			$this->tall = $tall;
+		}
+		
+		$this->tidligereTall = $tidligereTall;
+		$this->vinnere = $vinnere;
+		$this->rader = $rader;
 	}
 
 	public function trekk() {
 		$tall = array_pop($this->tall);
+		if (is_null($tall)) {
+			return null;
+		}
+		
 		$this->tidligereTall[] = $tall;
 
 		return $tall;
@@ -116,5 +124,60 @@ class Omgang {
 
 		$html .= "</table>\n";
 		return $html;
+	}
+
+	public function hentTallene() {
+		return $this->tall;
+	}
+
+	public function hentTidligereTall() {
+		return $this->tidligereTall;
+	}
+
+	public function hentVinnere() {
+		return $this->vinnere;
+	}
+
+	public function hentRader() {
+		return $this->rader;
+	}
+
+	public function hentNavn() {
+		return $this->navn;
+	}
+
+	public function hentLykkepott() {
+		return $this->lykkepott;
+	}
+
+	public function hentLykketall() {
+		return $this->lykketall;
+	}
+
+	public function hentFraDb($db) {
+		$sql = "SELECT * FROM omganger ORDER BY omgangid DESC LIMIT 1";
+		$data = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+
+		if (empty($data['tidligereTall']) || is_null($data['tidligereTall']) || $data['tidligereTall'] === '') {
+			$this->tidligereTall = [];
+		} else {
+			$this->tidligereTall = explode(';', $data['tidligereTall']);
+		}
+
+		if ((empty($data['tall']) || is_null($data['tall']) || $data['tall'] === '') && empty($this->tidligereTall)) {
+			$this->tall = range(1, 90);
+			shuffle($this->tall);
+		} else {
+			$this->tall = explode(';', $data['tall']);
+		}
+
+		$this->navn = $data['navn'];
+		$this->type = $data['type'];
+		$this->rader = $data['antallRader'];
+		$this->lykketall = 88; // FIXME
+		$this->lykkepott = 7000; // FIXME
+		$this->vinnere = []; // FIXME
+
+		return $data['omgangid'];
 	}
 }
