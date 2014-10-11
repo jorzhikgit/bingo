@@ -22,25 +22,17 @@ def output_card(matrix):
     print "--------------------------"
 
 def card_string(matrix):
-    count = 0
-    result = ""
-    for row in matrix:
-        if count % 3 == 0 and result != "":
-           print result
-           result = ""
+    rows = []
 
-        count += 1
-        
-        if result != "":
-            result += "-"
-        
-        for cell in row:
-            if not cell:
-                result += ";.;"
-            else:
-                result += ';' + str(cell) + ';'
-    
-    print result
+    for x in range(0, len(matrix)):
+        if x % 3 == 0:
+            if len(rows) > 0:
+                print "-".join(rows)
+            rows = []
+
+        rows.append(';'.join(['' if y is None else str(y) for y in matrix[x]]))
+
+    print "-".join(rows)
 
 # this will get the total number of numbers in a card
 def get_items_in_card(card):
@@ -138,29 +130,24 @@ def main(arg):
 
         # second iteration, all the 2-columns
         count = 0
-
         # make the order in which we spread the 2-column a bit more random
         for y in range(0, len(card)):
             if len(card[y]) == 2:
                 col = card[y]
                 if count == 0:
-                    matrix[x * 3 + 0][y] = col.pop(0)
-                    matrix[x * 3 + 1][y] = col.pop(0)
-                    rowcount[0] += 1
-                    rowcount[1] += 1
+                    r = (0, 1)
                     count = 1
                 elif count == 1:
-                    matrix[x * 3 + 1][y] = col.pop(0)
-                    matrix[x * 3 + 2][y] = col.pop(0)
-                    rowcount[1] += 1
-                    rowcount[2] += 1
+                    r = (1, 2)
                     count = 2
                 elif count == 2:
-                    matrix[x * 3 + 0][y] = col.pop(0)
-                    matrix[x * 3 + 2][y] = col.pop(0)
-                    rowcount[0] += 1
-                    rowcount[2] += 1
+                    r = (0, 2)
                     count = 0
+                
+                matrix[x * 3 + r[0]][y] = col.pop(0)
+                matrix[x * 3 + r[1]][y] = col.pop(0)
+                rowcount[r[0]] += 1
+                rowcount[r[1]] += 1
 
         for y in range(0, len(card)):
             if len(card[y]) == 1:
@@ -169,6 +156,7 @@ def main(arg):
                 matrix[x * 3 + row][y] = card[y].pop(0)
                 rowcount[row] += 1
 
+    output_card(matrix)
     card_string(matrix)
 
 if __name__ == '__main__':

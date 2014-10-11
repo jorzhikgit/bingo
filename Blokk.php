@@ -106,20 +106,14 @@ class Blokk {
 
 	public function lagBlokkFraTekst($tekst) {
 		$blokk = [];
-		$rader = explode('-', $tekst);
-		foreach ($rader as $radnr => $rad) {
-			$blokk[$radnr] = [];
+		$count = 0;
 
-			preg_match_all("/(?:;)(\d|\d{2}|.)(?:;)/", $rad, $tallene);
-			$tallene = $tallene[1];
-			
-			foreach ($tallene as $tall) {
-				if ($tall == ".") {
-					$blokk[$radnr][] = null;
-				} else {
-					$blokk[$radnr][] = $tall;
-				}
-			}
+		foreach (explode('-', $tekst) as $rad) {
+		  $blokk[$count] = [];
+		  foreach (explode(';', $rad) as $kolonne) {
+		    array_push($blokk[$count], $kolonne);
+		  }
+		  $count += 1;
 		}
 
 		$this->blokk = $blokk;
