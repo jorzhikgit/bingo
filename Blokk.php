@@ -89,19 +89,20 @@ class Blokk {
 	}
 
 	public function hentTekstBlokk() {
-		$resultat = "";
-		foreach ($this->blokk as $rad) {
-			foreach ($rad as $nummer) {
-				if (is_null($nummer)) {
-					$resultat .= ";.;";
-				} else {
-					$resultat .= sprintf(';%d;', $nummer);
-				}
-			}
-			$resultat .= "-";
-		}
+	  $result = "";
+	  $rows = [];
+	  for ($i = 0; $i < count($this->blokk); $i++) {
+	    if ($i % 3 == 0) {
+	      if (count($rows) > 0) {
+		$result .= implode("-", $rows);
+	      }
+	      $rows = [];
+	    }
+	    array_push($rows, implode(';', $this->blokk[$i]));
+	  }
+	  $result .= implode("-", $rows);
 
-		return $resultat;
+	  return $result;
 	}
 
 	public function lagBlokkFraTekst($tekst) {
