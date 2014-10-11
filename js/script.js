@@ -32,17 +32,18 @@ $(document).ready(function () {
 		e.preventDefault();
 
 		var kontrollnr = $("#kontrollnr").val();
+		$("#kontrollnr").val(""); // reset
 		$.getJSON("json.php?valg=kontroll&kontrollnr=" + kontrollnr, function (data) {
 			if (data.status) {
-				if (data.vant) {
-					$("#sjekk").html(data.html).prepend("<p>Spiller har bingo. " + 
-						"Vinnertall: " + data.vinnertall + ".</p>")
-						.modal({clickClose: false});
-				} else {
-					$("#sjekk").html(data.html).prepend("<p>Har " + 
-						"<strong>IKKE</strong> bingo.</p>")
-						.modal({clickClose: false});
-				}
+				var vant = "<p>Spiller har bingo. " + 
+					"Vinnertall: " + data.vinnertall + ".</p>";
+				var vantIkke = "<p>Har <strong>IKKE</strong> bingo.</p>";
+				var prependHTML = (data.vant) ? vant : vantIkke;
+
+				$("#sjekk").html(data.html).prepend(prependHTML)
+					.modal({clickClose: false})
+					.append('<p>Kontrollnummer: ' + kontrollnr + '</p>')
+					.append('<a href="#" rel="modal:close" class="button ok">OK</a>');
 			}
 		});
 	}

@@ -4,6 +4,10 @@ body {
 	margin: 0 auto;
 }
 
+p {
+	margin-bottom: 0;
+}
+
 #trektTabell {
 	border-collapse: collapse;
 	margin: 1em auto;
@@ -108,6 +112,13 @@ body {
 		background-color: rgba(255, 220, 0, 0.2);
 	}
 
+	.button.ok {
+		margin: 0.5em;
+		margin-left: 0;
+		padding: 0.5em;
+		font-size: 150%;
+	}
+
 #sjekk .trekt {
 	background-color: green;
 	color: white;
@@ -119,5 +130,8 @@ body {
 
 #sjekk td {
 	width: 2em;
-	border: 1px solid black;
+	height: 2em;
+	vertical-align: middle;
+	text-align: center;
+	border: 0.0625em solid black; /* 1px / 16px */
 }
