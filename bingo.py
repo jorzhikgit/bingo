@@ -21,6 +21,27 @@ def output_card(matrix):
         print
     print "--------------------------"
 
+def card_string(matrix):
+    count = 0
+    result = ""
+    for row in matrix:
+        if count % 3 == 0 and result != "":
+           print result
+           result = ""
+
+        count += 1
+        
+        if result != "":
+            result += "-"
+        
+        for cell in row:
+            if not cell:
+                result += ";.;"
+            else:
+                result += ';' + str(cell) + ';'
+    
+    print result
+
 # this will get the total number of numbers in a card
 def get_items_in_card(card):
     count = 0
@@ -151,7 +172,7 @@ def main(arg):
                     matrix[x * 3 + 2][y] = cards[x][y].pop(0)
                     row3 += 1
 
-    output_card(matrix)
+    card_string(matrix)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
