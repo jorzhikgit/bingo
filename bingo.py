@@ -141,7 +141,7 @@ def generate_strip(strip, tickets):
                 rowcount[r[0]] += 1
                 rowcount[r[1]] += 1
 
-        for y in range(0, ntickets):
+        for y in range(0, cols):
             if len(ticket[y]) == 1:
                 # find the index of the lowest rowcount
                 row = rowcount.index(min(rowcount))
@@ -182,6 +182,7 @@ def main(arg):
         tickets = generate_tickets(copy.deepcopy(pool))
         strip = generate_strip(copy.deepcopy(strip_template), tickets)
         strip_string(strip)
+        output_strip(strip)
 
         count += 1
 
