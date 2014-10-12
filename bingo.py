@@ -181,6 +181,7 @@ def main(arg):
 
         tickets = generate_tickets(copy.deepcopy(pool))
         strip = generate_strip(copy.deepcopy(strip_template), tickets)
+        strip_string(strip)
 
         count += 1
 
