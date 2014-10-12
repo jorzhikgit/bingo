@@ -33,7 +33,7 @@ class Round {
             $this->jackpot = $jackpot;
         }
         else {
-            throw new Exception("The must be between 1000 and 20 000.");
+            throw new Exception("The jackpot must be between 1000 and 20 000.");
         }
 
         if (empty($numbers)) {
