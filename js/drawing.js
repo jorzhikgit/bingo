@@ -9,9 +9,13 @@ $(document).ready(function () {
 			if (data.status) {
 				switch (data.gamestatus) {
 					case "notStarted":
-						$("#modal").html('<h2>Ikke startet</h2><p>' +
+						$("#modal").html('<h2>Ikke startet</h2><div>' +
+							'<label>Avvikler: <input type="text" id="presenter">' +
+							'</label><br /><label>Produsent: ' +
+							'<input type="text" id="producer"></label><p>' +
 							'<a href="#" class="button" id="startGame">' +
 							'Start spill!</a></p>').modal({clickClose: false});
+						autocompleteStartGame();
 						bindStartGame();
 						break;
 
@@ -115,7 +119,7 @@ $(document).ready(function () {
 		}
 	});
 
-	function binWinnerRegistration() {
+	function bindWinnerRegistration() {
 		$("#registerWinner").click(function (e) {
 			e.preventDefault();
 
@@ -134,7 +138,7 @@ $(document).ready(function () {
 						'<label>Sted: <input type="text" id="winnerPlace" /></label><br />' +
 						'<label>Beløp: <input type="text" id="winnerPrice" /></label></div>')
 
-					autocomplete();
+					autocompleteWinners();
 
 					$("#modal").append('<div><a href="#" id="saveWinner" class="button">Lagre</a><a href="#" id="cancelWinner" class="button">Avbryt</a></div>');
 					bindWinnerSaving();
@@ -146,7 +150,7 @@ $(document).ready(function () {
 		});
 	}
 
-	function autocomplete() {
+	function autocompleteWinners() {
 		$("#winnerName").autocomplete({
 			source: function (req, res) {
 				var term = encodeURIComponent(req.term);
@@ -167,6 +171,26 @@ $(document).ready(function () {
 			source: function (req, res) {
 				var term = encodeURIComponent(req.term);
 				$.getJSON("json.php?action=getPlace&term=" + term, function (data) {
+					res(data);
+				});
+			}
+		});
+	}
+
+	function autocompleteStartGame() {
+		$("#presenter").autocomplete({
+			source: function (req, res) {
+				var term = encodeURIComponent(req.term);
+				$.getJSON("json.php?action=getEmployee&term=" + term, function (data) {
+					res(data);
+				});
+			}
+		});
+
+		$("#producer").autocomplete({
+			source: function (req, res) {
+				var term = encodeURIComponent(req.term);
+				$.getJSON("json.php?action=getEmployee&term=" + term, function (data) {
 					res(data);
 				});
 			}
@@ -244,7 +268,14 @@ $(document).ready(function () {
 		$("#startGame").click(function (e) {
 			e.preventDefault();
 
-			$.getJSON("json.php?action=startGame", function (data) {
+			var producer = encodeURIComponent($("#producer").val());
+			var presenter = encodeURIComponent($("#presenter").val());
+
+			console.log("json.php?action=startGame&producer=" + producer +
+				"&presenter=" + presenter);
+
+			$.getJSON("json.php?action=startGame&producer=" + producer +
+				"&presenter=" + presenter, function (data) {
 				if (data.status) {
 					$.modal.close();
 					init();
