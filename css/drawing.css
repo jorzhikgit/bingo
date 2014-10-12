@@ -8,7 +8,7 @@ p {
 	margin-bottom: 0;
 }
 
-#venstre {
+#left {
 	float: left;
 	width: 30%;
 	background-color: #DDDDDD;
@@ -17,30 +17,30 @@ p {
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 }
-	#venstre .button {
+	#left .button {
 		margin: 2em 0;
 		font-size: 150%;
 		padding: 0.5em;
 	}
 
-#hoyre {
+#right {
 	float: right;
 	width: 65%;
 }
 
-#lykketall, #lykkepott, #antallRader {
+#jackpotNumber, #jackpot, #rows {
 	font-size: 150%;
 }
 
-#lykkepott {
+#jackpot {
 	margin-bottom: 1em;
 }
 
-#trektTabell {
+#drawnTable {
 	border-collapse: collapse;
 	margin: 1em;
 }
-	#trektTabell td {
+	#drawnTable td {
 		width: 2em;
 		height: 2em;
 		border: 0.0625em solid black; /* 1px / 16px */
@@ -49,22 +49,20 @@ p {
 		font-weight: bold;
 	}
 
-	#trektTabell tr {
+	#drawnTable tr {
 		background-color: #FFDC00;
 	}
 
-#trekning {
+#drawing {
 	width: 26em;
 	margin: 1em;
 }
 
-	#talletErWrapper {
-		margin: 1em;
-		float: left;
+	#nuberIsWrapper {
 		width: 5.5em;
 	}
 
-		#talletEr {
+		#numberIs {
 			width: 1.8em;
 			height: 1.8em;
 			background-color: #FFDC00;
@@ -76,42 +74,40 @@ p {
 			border: 0.02083333333333em solid black; /* 1px / 48 px */
 		}
 
-	#trekk {
-		margin: 0.5em;
-		margin-top: 0.75em;
+	#draw {
+		margin-top: 0.5em;
 		width: 7em;
 		height: 1em;
-		float: right;
 		font-size: 200%;
 		padding: 0.5em;
 	}
 
-#trekt {
+#drawn {
 	width: 100%;
 	height: 4em;
 	margin: 1em 0;
 	border: 0.0625em solid black; /* 1px / 16px */
 }
 
-#antallWrapper {
+#countWrapper {
 	margin: 0;
 	font-size: 150%;
 }
 
-#kontrollnrWrapper {
+#verifyWrapper {
 	margin: 0;
 	font-size: 150%;
 	text-align: right;
 }
 
-	#kontrollnr {
+	#verificationCode {
 		font-size: 100%;
 		width: 4em;
 		padding: 0.2em;
 		margin: 0.1em;
 	}
 
-	#kontroller {
+	#verify {
 		padding: 0.2em;
 		margin: 0.2em;
 	}
