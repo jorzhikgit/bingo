@@ -2,37 +2,45 @@
 require_once "Ticket.php";
 
 class Round {
-    public function __construct($name = 1, $type = "R", $jackpotNumber = 0, $jackpot = 0, $numbers = [], $drawnNumbers = [], $rows = 1, $winners = []) {
+    public function __construct($name = 1, $type = "R", $jackpotNumber = 0, $jackpot = 0, $rows = 1,
+                                $numbers = [], $drawnNumbers = [], $winners = []) {
+
         if ($name >= 1 && $name <= 5) {
             $this->name = $name;
-        } elseif ($type == "P") {
+        }
+        elseif ($type == "P") {
             $this->name = "Pausespill";
-        } else {
+        }
+        else {
             throw new Exception("Invalid round name.");
         }
 
-        if($type == "P" || $type == "R") {
+        if ($type == "P" || $type == "R") {
             $this->type = $type;
-        } else {
+        }
+        else {
             throw new Exception("Invalid type of round.");
         }
 
         if ($jackpotNumber >= 1 && $jackpotNumber <= 90) {
             $this->jackpotNumber = $jackpotNumber;
-        } else {
+        }
+        else {
             throw new Exception("The jackpot number must be between 1 and 90.");
         }
 
         if ($jackpot >= 1000 && $jackpot <= 20000) {
             $this->jackpot = $jackpot;
-        } else {
+        }
+        else {
             throw new Exception("The must be between 1000 and 20 000.");
         }
 
         if (empty($numbers)) {
             $this->numbers = range(1, 90);
             shuffle($this->numbers);
-        } else {
+        }
+        else {
             $this->numbers = $numbers;
         }
         
@@ -42,51 +50,51 @@ class Round {
     }
 
     public function draw() {
-        $number = array_pop($this->numbers);
-        if (is_null($number) || $number === "") {
+        if (empty($this->numbers)) {
             return null;
         }
-
+        $number = array_pop($this->numbers);
         $this->drawnNumbers[] = $number;
-
         return $number;
     }
 
     public function validateTicket(Ticket $ticket) {
+        // this is all the numbers that has been matched for the ticket
         $numbers = [];
+
+        // this is the count of the different rows
         $rows = [0, 0, 0];
-        $winningNumber = 0;
+        
+        // this is the array of the numbers that completed the different rows
+        $winningNumbers = [0, 0, 0];
 
+        // the number of rows completed
+        $completedRows = 0;
+        
         foreach ($this->drawnNumbers as $number) {
-            $hasNumber = $ticket->hasNumber($number);
+            $row = $ticket->getNumberRow($number);
 
-            if(!is_null($hasNumber)) {
-                $numbers[] = $hasNumber;
-                $rows[$hasNumber["row"]]++;
-                $winningNumber = $number;
+            // number is located in a row in the ticket
+            if (!is_null($row)) {
+                $numbers[] = $number;
+
+                if (count(++$rows[$row]) == 5) {
+                    $winningNumbers[$completedRows] = $number;
+                    $completedRows++;
+                }
             }
         }
 
-        $winningRows = 0;
-        foreach ($rows as $row) {
-            if ($row == 5) {
-                $winningRows++;
-            }
+        if ($completedRows >= $this->rows) {
+            return ["win" => True,
+                    "numbers" => $numbers,
+                    "winningNumbers" => $winningNumbers];
         }
-
-        if ($winningRows >= $this->rows) {
-            $haveWon = true;
-        } else {
-            $haveWon = false;
+        else {
+            return ["win" => False,
+                    "numbers" => $numbers,
+                    "winningNumbers" => $winningNumbers];
         }
-
-        if ($haveWon) {
-            return ["haveWon" => true, "numbers" => $numbers, 
-                "number" => $winningNumber];
-        }
-
-        return ["haveWon" => false, "numbers" => $numbers, "number" => null];
-
     }
 
     public function newRound() {
