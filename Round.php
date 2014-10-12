@@ -1,8 +1,8 @@
 <?php
-require_once "Blokk.php";
+require_once "Ticket.php";
 
 class Round {
-    public function __construct($name = 1, $type = "R", $lucky = 0, $jackpot = 0, $numbers = [], $formerNumbers = [], $rows = 1, $winners = []) {
+    public function __construct($name = 1, $type = "R", $jackpotNumber = 0, $jackpot = 0, $numbers = [], $drawnNumbers = [], $rows = 1, $winners = []) {
         if ($name >= 1 && $name <= 5) {
             $this->name = $name;
         } elseif ($type == "P") {
@@ -17,10 +17,10 @@ class Round {
             throw new Exception("Invalid type of round.");
         }
 
-        if ($lucky >= 1 && $lucky <= 90) {
-            $this->lucky = $lucky;
+        if ($jackpotNumber >= 1 && $jackpotNumber <= 90) {
+            $this->jackpotNumber = $jackpotNumber;
         } else {
-            throw new Exception("The lucky number must be between 1 and 90.");
+            throw new Exception("The jackpot number must be between 1 and 90.");
         }
 
         if ($jackpot >= 1000 && $jackpot <= 20000) {
@@ -36,7 +36,7 @@ class Round {
             $this->numbers = $numbers;
         }
         
-        $this->formerNumbers = $formerNumbers;
+        $this->drawnNumbers = $drawnNumbers;
         $this->winners = $winners;
         $this->rows = $rows;
     }
@@ -47,7 +47,7 @@ class Round {
             return null;
         }
 
-        $this->formerNumbers[] = $number;
+        $this->drawnNumbers[] = $number;
 
         return $number;
     }
@@ -57,12 +57,12 @@ class Round {
         $rows = [0, 0, 0];
         $winningNumber = 0;
 
-        foreach ($this->formerNumbers as $number) {
-            $haveNumber = $ticket->haveNumber($number);
+        foreach ($this->drawnNumbers as $number) {
+            $hasNumber = $ticket->hasNumber($number);
 
-            if(!is_null($haveNumber)) {
-                $numbers[] = $haveNumber;
-                $rows[$haveNumber["row"]]++;
+            if(!is_null($hasNumber)) {
+                $numbers[] = $hasNumber;
+                $rows[$hasNumber["row"]]++;
                 $winningNumber = $number;
             }
         }
@@ -142,8 +142,8 @@ class Round {
         return $this->numbers;
     }
 
-    public function getFormerNumbers() {
-        return $this->formerNumbers;
+    public function getdrawnNumbers() {
+        return $this->drawnNumbers;
     }
 
     public function getWinners() {
@@ -162,33 +162,33 @@ class Round {
         return $this->jackpot;
     }
 
-    public function getLucky() {
-        return $this->lucky;
+    public function getjackpotNumber() {
+        return $this->jackpotNumber;
     }
 
     public function fromDb($db) {
         $sql = "SELECT * FROM rounds ORDER BY roundId DESC LIMIT 1";
         $round = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
 
-        if (empty($round['formerNumbers']) || is_null($round['formerNumbers']) || $round['formerNumbers'] === '') {
-            $this->formerNumbers = [];
+        if (empty($round['drawnNumbers']) || is_null($round['drawnNumbers']) || $round['drawnNumbers'] === '') {
+            $this->drawnNumbers = [];
         } else {
-            $this->formerNumbers = explode(';', $round['formerNumbers']);
+            $this->drawnNumbers = explode(';', $round['drawnNumbers']);
         }
 
-        if ((empty($round['numbers']) || is_null($round['numbers']) || $round['numbers'] === '') && empty($this->formerNumbers)) {
+        if ((empty($round['numbers']) || is_null($round['numbers']) || $round['numbers'] === '') && empty($this->drawnNumbers)) {
             $this->numbers = range(1, 90);
             shuffle($this->numbers);
         } else {
             $this->numbers = explode(';', $round['tall']);
         }
 
-        $sql = "SELECT nights.lucky, nights.jackpot FROM nights WHERE nightId = :nightId";
+        $sql = "SELECT nights.jackpotNumber, nights.jackpot FROM nights WHERE nightId = :nightId";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(":nightId", $round['nightId'], PDO::PARAM_INT);
         $stmt->execute();
         $night = $stmt->fetch(PDO::FETCH_ASSOC);
-        $lucky = $night['lucky'];
+        $jackpotNumber = $night['jackpotNumber'];
         $jackpot = $night['jackpot'];
 
         $stmt = $db->prepare("SELECT winners.winnerId, customers.name, places.place, " .
@@ -205,7 +205,7 @@ class Round {
         $this->name = $round['name'];
         $this->type = $round['type'];
         $this->rows = $round['rows'];
-        $this->lucky = $lucky;
+        $this->jackpotNumber = $jackpotNumber;
         $this->jackpot = $jackpot;
         $this->winners = $winners;
 
