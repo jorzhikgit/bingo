@@ -64,7 +64,6 @@ CREATE TABLE `games` (
   `got_jackpot` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dato` (`date`),
-  UNIQUE KEY `producer` (`producer`),
   KEY `presenter` (`presenter`,`producer`),
   CONSTRAINT `games_ibfk_2` FOREIGN KEY (`producer`) REFERENCES `employees` (`id`),
   CONSTRAINT `games_ibfk_1` FOREIGN KEY (`presenter`) REFERENCES `employees` (`id`)

@@ -271,9 +271,6 @@ $(document).ready(function () {
             var producer = encodeURIComponent($("#producer").val());
             var presenter = encodeURIComponent($("#presenter").val());
 
-            console.log("json.php?action=startGame&producer=" + producer +
-                "&presenter=" + presenter);
-
             $.getJSON("json.php?action=startGame&producer=" + producer +
                 "&presenter=" + presenter, function (data) {
                 if (data.status) {
