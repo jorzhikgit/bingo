@@ -5,7 +5,14 @@ An all-in-one solution for [Bingo](http://en.wikipedia.org/wiki/Bingo_%28Commonw
 To run tests, please execute the following in the top level directory:
 
 ```
-php phpunit.phar --bootstrap tests/bootstrap.php tests
+phpunit --bootstrap tests/bootstrap.php tests
+```
+
+### Install PHPUnit
+```
+wget https://phar.phpunit.de/phpunit.phar
+chmod +x phpunit.phar
+sudo mv phpunit.phar /usr/local/bin/phpunit
 ```
 
 ## Work in progress!
