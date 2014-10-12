@@ -43,7 +43,7 @@ $(document).ready(function () {
 	}
 
 	init();
-	$("#venstre").css("height", $(document).height() - $("#trekt").outerHeight(true));
+	$("#left").css("height", $(document).height() - $("#drawn").outerHeight(true));
 
 
 	function drawNumber(e) {
@@ -60,7 +60,7 @@ $(document).ready(function () {
 		});
 	}
 
-	$("#trekk").click(function (e) {
+	$("#draw").click(function (e) {
 		drawNumber(e);
 	});
 
@@ -105,11 +105,11 @@ $(document).ready(function () {
 		});
 	}
 
-	$("#kontroller").click(function (e) {
+	$("#verify").click(function (e) {
 		verifyTicket(e);	
 	});
 
-	$("#kontrollnr").keyup(function (e) {
+	$("#verificationCode").keyup(function (e) {
 		if (e.keyCode == 13) {
 			verifyTicket(e);
 		}
