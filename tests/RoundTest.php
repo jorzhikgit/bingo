@@ -12,7 +12,7 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 		$ticket = new Ticket(10000);
 		$round = $this->round;
 
-		$ticket->fromText("1;11;;;46;50;;;81-9;;20;35;;52;;70;-;;21;;48;;63;76;87");
+		$ticket->fromString("1;11;;;46;50;;;81-9;;20;35;;52;;70;-;;21;;48;;63;76;87");
 		$validated = $round->validateTicket($ticket);
 
 		$this->assertTrue($validated['win']);
@@ -22,9 +22,16 @@ class RoundTest extends PHPUnit_Framework_TestCase {
 		$ticket = new Ticket(10001);
 		$round = $this->round;
 
-		$ticket->fromText(";17;;31;40;;60;75;-;;25;38;43;56;;77;-5;;;39;;58;66;;86");
+		$ticket->fromString(";17;;31;40;;60;75;-;;25;38;43;56;;77;-5;;;39;;58;66;;86");
 		$validated = $round->validateTicket($ticket);
 
 		$this->assertFalse($validated['win']);
+	}
+
+	public function testDrawing() {
+		$this->assertEquals(51, $this->round->draw());
+		$this->assertEquals(65, $this->round->draw());
+		$this->assertEquals(32, $this->round->draw());
+		$this->assertEquals(85, $this->round->draw());
 	}
 }
