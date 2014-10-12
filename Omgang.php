@@ -92,7 +92,7 @@ class Omgang {
 		for ($rad= 0; $rad < count($blokk); $rad++) {
 			$kombinert[$rad] = [];
 			for ($tall = 0; $tall < count($blokk[$rad]); $tall++) {
-				if(is_null($blokk[$rad][$tall])) {
+				if($blokk[$rad][$tall] == "") {
 					$kombinert[$rad][$tall] = [" ", true];
 				} else {
 					$kombinert[$rad][$tall] = [$blokk[$rad][$tall], false];

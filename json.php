@@ -3,18 +3,17 @@
 require_once "database.php";
 require_once "Omgang.php";
 require_once "Blokk.php";
-
-$lykketall = 88; // FIXME: hent fra db
-$lykkepott = 7000;
-$vinnere = [];
+require_once "config.php";
 
 function traverseEncode($array) {
 	$result = [];
 	foreach ($array as $key => $value) {
 		if (gettype($value) == "array") {
 			$result[$key] = traverseEncode($value);
-		} else {
+		} elseif (gettype($value) == "string") {
 			$result[$key] = utf8_encode($value);
+		} else {
+			$result[$key] = $value;
 		}
 	}
 	return $result;
@@ -106,15 +105,21 @@ if ($_GET['valg'] == "trekk") {
 			$validert['vinnerTall']]);
 	}
 } elseif ($_GET['valg'] == "hentVinnere") {
-	$sql = "SELECT omganger.omgangid FROM omganger ORDER BY omgangid DESC LIMIT 1";
-	$omgangid = $db->query($sql)->fetchColumn(0);
+	$sql = "SELECT omganger.omgangid, omganger.antallRader FROM omganger" .
+		" ORDER BY omgangid DESC LIMIT 1";
+	$omgang = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+	$omgangid = $omgang['omgangid'];
+	$antallRader = $omgang['antallRader'];
 
-	$stmt = $db->prepare("SELECT vinnere.vinnerid, kunder.navn, steder.sted, vinnere.utbetaling FROM vinnere " . 
+	$stmt = $db->prepare("SELECT vinnere.vinnerid, kunder.navn, steder.sted, " .
+		"vinnere.utbetaling FROM vinnere " . 
 		"INNER JOIN kunder ON vinnere.kundeid = kunder.kundeid " .
 		"INNER JOIN steder ON kunder.stedid = steder.stedid " .
-		"WHERE vinnere.omgangid = :omgangid ORDER BY vinnere.vinnerid");
+		"WHERE vinnere.omgangid = :omgangid AND " .
+		"vinnere.antallRader = :antallRader ORDER BY vinnere.vinnerid");
 
 	$stmt->bindParam(":omgangid", $omgangid, PDO::PARAM_INT);
+	$stmt->bindParam(":antallRader", $antallRader, PDO::PARAM_INT);
 	$stmt->execute();
 
 	send(["status" => true, "vinnere" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
@@ -161,7 +166,7 @@ if ($_GET['valg'] == "trekk") {
 
 	send(["status" => true, "sted" => $stmt->fetchColumn(0)]);
 } elseif ($_GET['valg'] == "lagreVinnere") {
-	$vinnere = $_POST['vinnere'];
+	$vinnere = (is_null($_POST['vinnere'])) ? [] :$_POST['vinnere'];
 
 	$stmt = $db->prepare("UPDATE vinnere SET utbetaling = :utbetaling, " .
 		"igjenUtbetale = :igjenUtbetale WHERE vinnerid = :vinnerid");
@@ -174,8 +179,10 @@ if ($_GET['valg'] == "trekk") {
 
 	$vinner = traverseDecode($_POST['vinner']);
 
-	$sql = "SELECT omganger.omgangid FROM omganger ORDER BY omgangid DESC LIMIT 1";
-	$omgangid = $db->query($sql)->fetchColumn(0);
+	$sql = "SELECT omganger.omgangid, omganger.antallRader FROM omganger ORDER BY omgangid DESC LIMIT 1";
+	$omgang = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+	$omgangid = $omgang['omgangid'];
+	$antallRader = $omgang['antallRader'];
 
 	$stmt = $db->prepare("SELECT kunder.kundeid FROM kunder INNER JOIN steder " .
 		"ON kunder.stedid = steder.stedid WHERE kunder.navn = :navn AND " .
@@ -211,14 +218,103 @@ if ($_GET['valg'] == "trekk") {
 	}
 
 	$stmt = $db->prepare("INSERT INTO vinnere (kundeid, kontrollnr, dato, omgangid, " .
-		"igjenUtbetale, utbetaling, statusid) VALUES (:kundeid, :kontrollnr, NOW(), " .
-		":omgangid, :igjenUtbetale, :utbetaling, 5)");
+		"igjenUtbetale, utbetaling, statusid, antallRader) VALUES (:kundeid, " .
+		":kontrollnr, NOW(), " .
+		":omgangid, :igjenUtbetale, :utbetaling, 5, :antallRader)");
 	$stmt->bindParam(":kundeid", $kundeid, PDO::PARAM_INT);
 	$stmt->bindParam(":kontrollnr", $vinner['kontrollnr'], PDO::PARAM_INT);
 	$stmt->bindParam(":omgangid", $omgangid, PDO::PARAM_INT);
 	$stmt->bindParam(":igjenUtbetale", $vinner['utbetaling'], PDO::PARAM_INT);
 	$stmt->bindParam(":utbetaling", $vinner['utbetaling'], PDO::PARAM_INT);
+	$stmt->bindParam(":antallRader", $antallRader, PDO::PARAM_INT);
 	$stmt->execute();
+
+	send(["status" => true]);
+} elseif ($_GET['valg'] == "spillstatus") {
+	$sql = "SELECT * FROM kvelder WHERE dato = CURDATE() LIMIT 1";
+	$kveld = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+
+	if ($kveld === false) {
+		send(["status" => true, "spillstatus" => "ikkeStartet"]);
+	}
+
+	$sql = "SELECT * FROM omganger WHERE kveldid = :kveldid ORDER BY " .
+		"omgangid DESC LIMIT 1";
+	$stmt = $db->prepare($sql);
+	$stmt->bindParam(":kveldid", $kveld['kveldid'], PDO::PARAM_INT);
+	$stmt->execute();
+	$omgang = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	if ($omgang === false) {
+		send(["status" => true, "spillstatus" => "ingenOmgang", 
+			"lykketall" => $kveld['lykketall'], "lykkepott" => $kveld['lykkepott']]);
+	}
+
+	$tall = explode(";", $omgang['tidligereTall']);
+
+	send(["status" => true, "spillstatus" => "omgang", "omgang" => $omgang['navn'],
+		"type" => $omgang['type'], "antallRader" => $omgang['antallRader'],
+		"tall" => $tall, "lykketall" => $kveld['lykketall'], "lykkepott" => $kveld['lykkepott']]);
+} elseif ($_GET['valg'] == "startSpill") {
+	$sql = "SELECT * FROM kvelder ORDER BY kveldid DESC LIMIT 1";
+	$forrigeKveld = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+
+	$dato = $db->query("SELECT CURDATE()")->fetchColumn(0);
+	if ($forrigeKveld['dato'] == $dato) {
+		send(["status" => false, "error" => "Bare ei sending per kveld."]);
+	}
+
+	if ($forrigeKveld['lykkepottUtdelt'] == "J") {
+		$lykkepott = $lykkepottStart;
+	} else {
+		$lykkepott = $forrigeKveld['lykkepott'] + $lykkepottInkrementasjon;
+	}
+
+	$lykketall = mt_rand(1, 90);
+
+	$sql = "INSERT INTO kvelder (dato, lykketall, lykkepott) VALUES " .
+		"(CURDATE(), :lykketall, :lykkepott)";
+	$stmt = $db->prepare($sql);
+	$stmt->bindParam(":lykketall", $lykketall, PDO::PARAM_INT);
+	$stmt->bindParam(":lykkepott", $lykkepott, PDO::PARAM_INT);
+	$stmt->execute();
+
+	if ($stmt->rowCount() == 0) {
+		send(["status" => false, "error" => "Databasefeil."]);
+	}
+
+	send(["status" => true, "lykketall" => $lykketall, "lykkepott" => $lykkepott]);
+} elseif ($_GET['valg'] == "startOmgang") {
+	$sql = "SELECT kvelder.kveldid FROM kvelder ORDER BY kveldid DESC LIMIT 1";
+	$kveldid = $db->query($sql)->fetchColumn(0);
+
+	$sql = "INSERT INTO omganger (kveldid, type, navn, antallRader) VALUES" .
+		"(:kveldid, :type, :navn, :antallRader)";
+	$stmt = $db->prepare($sql);
+	$stmt->bindParam(":kveldid", $kveldid, PDO::PARAM_INT);
+	$stmt->bindParam(":type", $_GET['type'], PDO::PARAM_STR);
+	$stmt->bindParam(":navn", $_GET['navn'], PDO::PARAM_INT);
+	$stmt->bindParam(":antallRader", $_GET['antallRader'], PDO::PARAM_INT);
+	$stmt->execute();
+
+	if ($stmt->rowCount() == 0) {
+		send(["status" => false, "error" => "Databasefeil."]);
+	}
+
+	if (isset($_GET['vinnere'])) {
+		$forrigeOmgangid = (int)$db->query("SELECT omganger.omgangid FROM omganger " . 
+			"ORDER BY omgangid DESC LIMIT 2")->fetchAll(PDO::FETCH_ASSOC)['1']['omgangid'];
+
+		$sql = "SELECT kunder.navn, steder.sted, vinnere.utbetaling FROM vinnere " .
+			"INNER JOIN kunder ON vinnere.kundeid = kunder.kundeid " .
+			"INNER JOIN steder ON kunder.stedid = steder.stedid " . 
+			"WHERE vinnere.omgangid = :omgangid";
+		$stmt = $db->prepare($sql);
+		$stmt->bindParam(":omgangid", $forrigeOmgangid, PDO::PARAM_INT);
+		$stmt->execute();
+
+		send(["status" => true, "vinnere" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+	}
 
 	send(["status" => true]);
 }

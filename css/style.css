@@ -8,9 +8,37 @@ p {
 	margin-bottom: 0;
 }
 
+#venstre {
+	float: left;
+	width: 30%;
+	background-color: #DDDDDD;
+	padding: 1em;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+	#venstre .button {
+		margin: 2em 0;
+		font-size: 150%;
+		padding: 0.5em;
+	}
+
+#hoyre {
+	float: right;
+	width: 65%;
+}
+
+#lykketall, #lykkepott, #antallRader {
+	font-size: 150%;
+}
+
+#lykkepott {
+	margin-bottom: 1em;
+}
+
 #trektTabell {
 	border-collapse: collapse;
-	margin: 1em auto;
+	margin: 1em;
 }
 	#trektTabell td {
 		width: 2em;
@@ -27,7 +55,7 @@ p {
 
 #trekning {
 	width: 26em;
-	margin: 1em auto;
+	margin: 1em;
 }
 
 	#talletErWrapper {
@@ -59,39 +87,34 @@ p {
 	}
 
 #trekt {
-	width: 56.25em; /* 900px / 16px */
+	width: 100%;
 	height: 4em;
-	margin: 1em auto;
+	margin: 1em 0;
 	border: 0.0625em solid black; /* 1px / 16px */
 }
 
-#topp {
-	width: 56.25em; /* 900px / 16px */
-	margin: 1em auto;
+#antallWrapper {
+	margin: 0;
+	font-size: 150%;
 }
-	#antallWrapper {
-		margin: 0;
-		font-size: 150%;
-		float: left;
+
+#kontrollnrWrapper {
+	margin: 0;
+	font-size: 150%;
+	text-align: right;
+}
+
+	#kontrollnr {
+		font-size: 100%;
+		width: 4em;
+		padding: 0.2em;
+		margin: 0.1em;
 	}
 
-	#kontrollnrWrapper {
-		margin: 0;
-		font-size: 150%;
-		float: right;
+	#kontroller {
+		padding: 0.2em;
+		margin: 0.2em;
 	}
-
-		#kontrollnr {
-			font-size: 100%;
-			width: 4em;
-			padding: 0.2em;
-			margin: 0.1em;
-		}
-
-		#kontroller {
-			padding: 0.2em;
-			margin: 0.2em;
-		}
 
 .cf {
 	overflow: auto;
@@ -112,21 +135,21 @@ p {
 		background-color: rgba(255, 220, 0, 0.2);
 	}
 
-#sjekk {
+#modal {
 	font-size: 130%; /* 20.8px */
 }	
 
-	#sjekk .trekt {
+	#modal .trekt {
 		background-color: green;
 		color: white;
 	}
 
-	#sjekk table {
+	#modal table {
 		border-collapse: collapse;
 		margin-top: 0.5em;
 	}
 
-	#sjekk td {
+	#modal td {
 		width: 2em;
 		height: 2em;
 		vertical-align: middle;
@@ -134,11 +157,11 @@ p {
 		border: 0.0625em solid black; /* 1px / 16px */
 	}
 
-	#sjekk input {
+	#modal input {
 		font-size: 100%;
 	}
 
-	#sjekk .button {
+	#modal .button {
 		margin: 0.5em;
 		margin-left: 0;
 		padding: 0.5em;
