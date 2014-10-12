@@ -1,8 +1,3 @@
--- MySQL dump 10.13  Distrib 5.5.38, for debian-linux-gnu (x86_64)
---
--- Host: localhost    Database: bingo
--- ------------------------------------------------------
--- Server version	5.5.38-0ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,11 +9,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `booklets`
---
-
 DROP TABLE IF EXISTS `booklets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -34,11 +24,6 @@ CREATE TABLE `booklets` (
   CONSTRAINT `booklets_ibfk_2` FOREIGN KEY (`status`) REFERENCES `statuses` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12346 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `distributors`
---
-
 DROP TABLE IF EXISTS `distributors`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -53,11 +38,6 @@ CREATE TABLE `distributors` (
   UNIQUE KEY `mail` (`mail`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `drawing`
---
-
 DROP TABLE IF EXISTS `drawing`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -67,11 +47,6 @@ CREATE TABLE `drawing` (
   UNIQUE KEY `number` (`number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `employees`
---
-
 DROP TABLE IF EXISTS `employees`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -81,11 +56,6 @@ CREATE TABLE `employees` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `games`
---
-
 DROP TABLE IF EXISTS `games`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -105,11 +75,6 @@ CREATE TABLE `games` (
   CONSTRAINT `games_ibfk_1` FOREIGN KEY (`presenter`) REFERENCES `employees` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `places`
---
-
 DROP TABLE IF EXISTS `places`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -120,11 +85,6 @@ CREATE TABLE `places` (
   KEY `fk_steder_kunder1_idx` (`place`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `players`
---
-
 DROP TABLE IF EXISTS `players`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -137,11 +97,6 @@ CREATE TABLE `players` (
   CONSTRAINT `players_ibfk_1` FOREIGN KEY (`place`) REFERENCES `places` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `rounds`
---
-
 DROP TABLE IF EXISTS `rounds`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -158,11 +113,26 @@ CREATE TABLE `rounds` (
   CONSTRAINT `rounds_ibfk_1` FOREIGN KEY (`game`) REFERENCES `games` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `statuses`
---
-
+DROP TABLE IF EXISTS `sales`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sales` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `game` smallint(5) unsigned NOT NULL,
+  `distributor` tinyint(3) unsigned NOT NULL,
+  `booklet` smallint(5) unsigned NOT NULL,
+  `status` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `game` (`game`,`distributor`,`booklet`,`status`),
+  KEY `distributor` (`distributor`),
+  KEY `booklet` (`booklet`),
+  KEY `status` (`status`),
+  CONSTRAINT `sales_ibfk_4` FOREIGN KEY (`game`) REFERENCES `games` (`id`),
+  CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`distributor`) REFERENCES `distributors` (`id`),
+  CONSTRAINT `sales_ibfk_2` FOREIGN KEY (`booklet`) REFERENCES `booklets` (`id`),
+  CONSTRAINT `sales_ibfk_3` FOREIGN KEY (`status`) REFERENCES `statuses` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `statuses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -172,11 +142,6 @@ CREATE TABLE `statuses` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `strips`
---
-
 DROP TABLE IF EXISTS `strips`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -186,11 +151,6 @@ CREATE TABLE `strips` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `strips_booklets`
---
-
 DROP TABLE IF EXISTS `strips_booklets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -205,11 +165,6 @@ CREATE TABLE `strips_booklets` (
   CONSTRAINT `strips_booklets_ibfk_2` FOREIGN KEY (`booklet`) REFERENCES `booklets` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `tickets`
---
-
 DROP TABLE IF EXISTS `tickets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -223,11 +178,6 @@ CREATE TABLE `tickets` (
   CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`strip`) REFERENCES `strips` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `winners`
---
-
 DROP TABLE IF EXISTS `winners`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -261,4 +211,3 @@ CREATE TABLE `winners` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-12 21:26:22
