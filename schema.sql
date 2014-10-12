@@ -14,14 +14,7 @@ DROP TABLE IF EXISTS `booklets`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `booklets` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `distributor` tinyint(3) unsigned DEFAULT NULL,
-  `status` tinyint(3) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_hefter_utsalgssteder1_idx` (`distributor`),
-  KEY `distributor` (`distributor`),
-  KEY `status` (`status`),
-  CONSTRAINT `booklets_ibfk_1` FOREIGN KEY (`distributor`) REFERENCES `distributors` (`id`),
-  CONSTRAINT `booklets_ibfk_2` FOREIGN KEY (`status`) REFERENCES `statuses` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12346 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `distributors`;
@@ -44,7 +37,9 @@ DROP TABLE IF EXISTS `drawing`;
 CREATE TABLE `drawing` (
   `number` tinyint(3) unsigned NOT NULL,
   `picked` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  UNIQUE KEY `number` (`number`)
+  `when` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `number` (`number`),
+  UNIQUE KEY `when` (`when`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `employees`;
@@ -54,7 +49,7 @@ CREATE TABLE `employees` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(150) COLLATE utf8_swedish_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `games`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -102,13 +97,14 @@ DROP TABLE IF EXISTS `rounds`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `rounds` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `started` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `game` smallint(5) unsigned NOT NULL,
   `type` char(1) NOT NULL,
-  `name` tinyint(4) NOT NULL,
+  `name` tinyint(4) unsigned NOT NULL,
   `numbers` text,
-  `drawnNumbers` text,
-  `rows` tinyint(4) NOT NULL,
+  `rows` tinyint(4) unsigned NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `started` (`started`),
   KEY `game` (`game`),
   CONSTRAINT `rounds_ibfk_1` FOREIGN KEY (`game`) REFERENCES `games` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
@@ -131,7 +127,7 @@ CREATE TABLE `sales` (
   CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`distributor`) REFERENCES `distributors` (`id`),
   CONSTRAINT `sales_ibfk_2` FOREIGN KEY (`booklet`) REFERENCES `booklets` (`id`),
   CONSTRAINT `sales_ibfk_3` FOREIGN KEY (`status`) REFERENCES `statuses` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `statuses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -148,57 +144,47 @@ DROP TABLE IF EXISTS `strips`;
 CREATE TABLE `strips` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `booklet` smallint(5) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `strips_booklets`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `strips_booklets` (
-  `strip` mediumint(8) unsigned NOT NULL,
-  `booklet` smallint(5) unsigned NOT NULL,
-  KEY `fk_blokker_hefter_blokker1_idx` (`strip`),
+  PRIMARY KEY (`id`),
   KEY `booklet` (`booklet`),
-  KEY `strip` (`strip`),
-  KEY `booklet_2` (`booklet`),
-  CONSTRAINT `strips_booklets_ibfk_1` FOREIGN KEY (`strip`) REFERENCES `strips` (`id`),
-  CONSTRAINT `strips_booklets_ibfk_2` FOREIGN KEY (`booklet`) REFERENCES `booklets` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT `strips_ibfk_1` FOREIGN KEY (`booklet`) REFERENCES `booklets` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tickets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tickets` (
-  `verification` int(11) NOT NULL,
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `ticket` varchar(60) NOT NULL,
   `strip` mediumint(8) unsigned NOT NULL,
-  PRIMARY KEY (`verification`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `ticket` (`ticket`),
   KEY `strip` (`strip`),
   CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`strip`) REFERENCES `strips` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `winners`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `winners` (
-  `winnerId` int(11) NOT NULL AUTO_INCREMENT,
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `player` smallint(5) unsigned DEFAULT NULL,
-  `verification` int(11) NOT NULL,
-  `date` date NOT NULL,
+  `ticket` mediumint(8) unsigned NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `round` smallint(5) unsigned NOT NULL,
   `leftToPay` int(11) NOT NULL,
   `price` int(11) NOT NULL,
   `status` tinyint(3) unsigned NOT NULL,
-  `rows` int(11) NOT NULL,
-  PRIMARY KEY (`winnerId`),
+  `row` tinyint(3) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
   KEY `fk_vinnere_statuser1_idx` (`status`),
   KEY `fk_vinnere_kunder1_idx` (`player`),
   KEY `fk_vinnere_omgang1_idx` (`round`),
   KEY `player` (`player`),
-  CONSTRAINT `winners_ibfk_3` FOREIGN KEY (`round`) REFERENCES `rounds` (`id`),
+  KEY `ticket` (`ticket`),
+  CONSTRAINT `winners_ibfk_4` FOREIGN KEY (`ticket`) REFERENCES `tickets` (`id`),
   CONSTRAINT `winners_ibfk_1` FOREIGN KEY (`status`) REFERENCES `statuses` (`id`),
-  CONSTRAINT `winners_ibfk_2` FOREIGN KEY (`player`) REFERENCES `players` (`id`)
+  CONSTRAINT `winners_ibfk_2` FOREIGN KEY (`player`) REFERENCES `players` (`id`),
+  CONSTRAINT `winners_ibfk_3` FOREIGN KEY (`round`) REFERENCES `rounds` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
