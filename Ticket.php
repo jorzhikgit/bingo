@@ -10,11 +10,22 @@ class Ticket {
         $this->ticket = [];
     }
 
-    public function hasNumber($number) {
-        for ($row = 0; $row < 3; $row++) {
-            for ($position = 0; $position < 9; $position++) {
-                if ($this->blokk[$row][$position] == $number) {
-                    return ["row" => $row, "position" => $position];
+    public function getNumberRow($number) {
+        try {
+            list ($y, $x) = $this->getNumberPos($number);
+            return $y;
+        }
+        catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // this method will return the position of the number in the ticket (x and y)
+    public function getNumberPos($number) {
+        for ($y = 0; $y < 3; $y++) {
+            for ($x = 0; $x < 9; $x++) {
+                if ($this->ticket[$y][$x] == $number) {
+                    return array($y, $x);
                 }
             }
         }
@@ -25,7 +36,7 @@ class Ticket {
         return $this->ticket;
     }
 
-    public function toText() {
+    public function toString() {
         $result = "";
         $rows = [];
         for ($i = 0; $i < count($this->ticket); $i++) {
@@ -42,11 +53,11 @@ class Ticket {
         return $result;
     }
 
-    public function fromText($text) {
+    public function fromString($string) {
         $ticket = [];
         $count = 0;
 
-        foreach (explode('-', $text) as $row) {
+        foreach (explode('-', $string) as $row) {
           $ticket[$count] = [];
           foreach (explode(';', $row) as $column) {
             array_push($ticket[$count], $column);

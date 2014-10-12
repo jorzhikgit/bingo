@@ -4,7 +4,7 @@ require_once "Ticket.php";
 class Round {
     public function __construct($name = 1, $type = "R", $jackpotNumber = 0, $jackpot = 0, $rows = 1,
                                 $numbers = [], $drawnNumbers = [], $winners = []) {
-
+        
         if ($name >= 1 && $name <= 5) {
             $this->name = $name;
         }
@@ -78,13 +78,13 @@ class Round {
             if (!is_null($row)) {
                 $numbers[] = $number;
 
-                if (count(++$rows[$row]) == 5) {
+                if (++$rows[$row] == 5) {
                     $winningNumbers[$completedRows] = $number;
                     $completedRows++;
                 }
             }
         }
-
+        
         if ($completedRows >= $this->rows) {
             return ["win" => True,
                     "numbers" => $numbers,
