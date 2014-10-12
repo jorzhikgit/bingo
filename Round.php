@@ -1,5 +1,4 @@
 <?php
-require_once "Ticket.php";
 
 class Round {
     public function __construct($name = 1, $type = "R", $jackpotNumber = 0, $jackpot = 0, $rows = 1,
@@ -60,7 +59,7 @@ class Round {
 
     public function validateTicket(Ticket $ticket) {
         // this is all the numbers that has been matched for the ticket
-        $numbers = [];
+        $numbers = [[], [], []];
 
         // this is the count of the different rows
         $rows = [0, 0, 0];
@@ -76,7 +75,7 @@ class Round {
 
             // number is located in a row in the ticket
             if (!is_null($row)) {
-                $numbers[] = $number;
+                $numbers[$row][] = $number;
 
                 if (++$rows[$row] == 5) {
                     $winningNumbers[$completedRows] = $number;
@@ -114,13 +113,12 @@ class Round {
             for ($number = 0; $number < count($ticket[$row]); $number++) {
                 if($ticket[$row][$number] == "") {
                     $combined[$row][$number] = [" ", true];
-                } else {
+                }
+                else {
                     $combined[$row][$number] = [$ticket[$row][$number], false];
                 }
-
             }
         }
-
 
         foreach ($winningNumbers as $number) {
             $combined[$number['row']][$number['position']][1] = true;
@@ -131,10 +129,11 @@ class Round {
         foreach ($combined as $row) {
             $html .= "<tr>\n";
             foreach ($row as $position) {
-                if($position[1]) {
+                if ($position[1]) {
                     $html .= sprintf('<td class="%s">%s</td>%s', "trekt", 
                         $position[0], "\n");
-                } else {
+                }
+                else {
                     $html .= sprintf("<td>%s</td>\n", $position[0]);
                 }
             }
@@ -170,24 +169,26 @@ class Round {
         return $this->jackpot;
     }
 
-    public function getjackpotNumber() {
+    public function getJackpotNumber() {
         return $this->jackpotNumber;
     }
 
     public function fromDb($db) {
         $sql = "SELECT * FROM rounds ORDER BY roundId DESC LIMIT 1";
         $round = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
-
-        if (empty($round['drawnNumbers']) || is_null($round['drawnNumbers']) || $round['drawnNumbers'] === '') {
+        
+        if (empty($round['drawnNumbers'])) {
             $this->drawnNumbers = [];
-        } else {
+        }
+        else {
             $this->drawnNumbers = explode(';', $round['drawnNumbers']);
         }
 
-        if ((empty($round['numbers']) || is_null($round['numbers']) || $round['numbers'] === '') && empty($this->drawnNumbers)) {
+        if (empty($round["numbers"]) && empty($this->drawnNumbers)) {
             $this->numbers = range(1, 90);
             shuffle($this->numbers);
-        } else {
+        }
+        else {
             $this->numbers = explode(';', $round['tall']);
         }
 
