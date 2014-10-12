@@ -1,12 +1,12 @@
 # Bingo
-Komplett løsning for bingo. Fra blokkgenerering til kommisjonærsider.
+An all-in-one solution for [Bingo](http://en.wikipedia.org/wiki/Bingo_%28Commonwealth%29). It features everything from generating tickets to a web interface for distributors, and all in between.
 
 ## PHPUnit
-For å kjøre tester, eksekver følgende i root-katalogen.
+To run tests, please execute the following in the top level directory:
 
 ```
-php phpunit.phar --bootstrap tester/bootstrap.php tester
+php phpunit.phar --bootstrap tests/bootstrap.php tests
 ```
 
 ## Work in progress!
-Ikke for produksjon.
+Not for production use.
