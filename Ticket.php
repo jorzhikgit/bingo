@@ -5,12 +5,12 @@ class Ticket {
         if ($verification <= 10000 && $verification >= 99999) {
             throw new Exception("Invalid verification for ticket");
         }
-        
+
         $this->verification = $verification;
         $this->ticket = [];
     }
 
-    public function haveNumber($number) {
+    public function hasNumber($number) {
         for ($row = 0; $row < 3; $row++) {
             for ($position = 0; $position < 9; $position++) {
                 if ($this->blokk[$row][$position] == $number) {
