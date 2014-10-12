@@ -64,7 +64,8 @@ CREATE TABLE `games` (
   `got_jackpot` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dato` (`date`),
-  KEY `presenter` (`presenter`,`producer`),
+  KEY `presenter` (`presenter`),
+  KEY `producer` (`producer`),
   CONSTRAINT `games_ibfk_2` FOREIGN KEY (`producer`) REFERENCES `employees` (`id`),
   CONSTRAINT `games_ibfk_1` FOREIGN KEY (`presenter`) REFERENCES `employees` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
