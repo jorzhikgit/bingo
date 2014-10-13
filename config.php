@@ -1,4 +1,7 @@
 <?php
 
-$lykkepottStart = 5000;
-$lykkepottInkrementasjon = 500;
+$jackpotStart = 5000;
+$jackpotIncrement = 500;
+$jackpotMax = 20000;
+
+?>

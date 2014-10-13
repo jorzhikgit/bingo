@@ -53,35 +53,43 @@ class Request {
                 "rows" => $round['rows']]);
     }
 
+    // here stuff should happen! :)
+    static public function startRound($db) {
+    }
+
+
     static public function startGame($db) {
          // uses the following tables: employees, games
 
-        // get the employee id
+        // prepare the SQL to look up employees
         $sql = "SELECT employees.id FROM employees WHERE name = :name LIMIT 1";
         $stmt = $db->prepare($sql);
+        $stmt->bindParam(":name", $person, PDO::PARAM_STR);
+
+        $person = $_GET['producer'];
+        $stmt->execute();
+        $producer = $stmt->fetchColumn(0);
         
-        $stmt->bindValue(":name", $_GET['producer'], PDO::PARAM_STR);
+        $person = $_GET['presenter'];
         $stmt->execute();
-        $producer = (int)$stmt->fetchColumn(0);
+        $presenter = $stmt->fetchColumn(0);
 
-        $stmt->bindValue(":name", $_GET['presenter'], PDO::PARAM_STR);
-        $stmt->execute();
-        $presenter = (int)$stmt->fetchColumn(0);
-
-        $sql = "INSERT INTO employees (name) VALUES (:name)";
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(":name", $employee, PDO::PARAM_STR);
-
-        if (empty($producer)) {
-            $employee = $_GET["producer"];
-            $stmt->execute();
-            $producer = $db->lastInsertId();
-        }
-
-        if (empty($presenter)) {
-            $employee = $_GET["presenter"];
-            $stmt->execute();
-            $presenter = $db->lastInsertId();
+        if (empty($presenter) or empty($producer)) {
+            $sql = "INSERT INTO employees (name) VALUES (:name)";
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(":name", $employee, PDO::PARAM_STR);
+            
+            if (empty($producer)) {
+                $employee = $_GET["producer"];
+                $stmt->execute();
+                $producer = $db->lastInsertId();
+            }
+            
+            if (empty($presenter)) {
+                $employee = $_GET["presenter"];
+                $stmt->execute();
+                $presenter = $db->lastInsertId();
+            }
         }
 
         // fetch game data
@@ -90,13 +98,15 @@ class Request {
 
         $previousGame = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
 
+        // first game or jackpot in previous game, so start again
         if (empty($previousGame) or $previousGame['got_jackpot']) {
-            // first game ever
             $jackpot = 5000;
         }
+        // jackpot is already at max
         elseif ($previousGame["jackpot"] == 20000) {
             $jackpot = $previousGame["jackpot"];
         }
+        // increase the jackpot
         else {
             $jackpot = $previousGame['jackpot'] + 500;
         }
@@ -123,18 +133,18 @@ class Request {
     static public function getEmployee($db) {
         // uses the following tables: employees
 
-        $term = '%' . $_GET['term'] . '%';
-
         $sql = "SELECT employees.name FROM employees WHERE name LIKE :term";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(":term", $term, PDO::PARAM_STR);
+        $stmt->bindValue(":term", "%" . $_GET["term"] . "%", PDO::PARAM_STR);
         $stmt->execute();
 
-        $array = [];
+        $employees = [];
+
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $data) {
-            $array[] = $data['name'];
+            $employees[] = $data['name'];
         }
 
-        return self::json($array);
+        // json needs utf8-encoded strings, so make sure the database supports it!
+        return json_encode($employees);
     }
 }
