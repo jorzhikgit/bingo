@@ -1,51 +1,9 @@
 <?php
 
 class Round {
-    public function __construct($name = 1, $type = "R", $jackpotNumber = 0, $jackpot = 0, $rows = 1,
-                                $numbers = [], $drawnNumbers = [], $winners = []) {
-        
-        if ($name >= 1 && $name <= 5) {
-            $this->name = $name;
-        }
-        elseif ($type == "P") {
-            $this->name = "Pausespill";
-        }
-        else {
-            throw new Exception("Invalid round name.");
-        }
-
-        if ($type == "P" || $type == "R") {
-            $this->type = $type;
-        }
-        else {
-            throw new Exception("Invalid type of round.");
-        }
-
-        if ($jackpotNumber >= 1 && $jackpotNumber <= 90) {
-            $this->jackpotNumber = $jackpotNumber;
-        }
-        else {
-            throw new Exception("The jackpot number must be between 1 and 90.");
-        }
-
-        if ($jackpot >= 1000 && $jackpot <= 20000) {
-            $this->jackpot = $jackpot;
-        }
-        else {
-            throw new Exception("The jackpot must be between 1000 and 20 000.");
-        }
-
-        if (empty($numbers)) {
-            $this->numbers = range(1, 90);
-            shuffle($this->numbers);
-        }
-        else {
-            $this->numbers = $numbers;
-        }
-        
-        $this->drawnNumbers = $drawnNumbers;
-        $this->winners = $winners;
-        $this->rows = $rows;
+    public function __construct($db) {
+        $this->db = $db;
+        $this->fromDb($db);
     }
 
     public function draw() {
@@ -149,8 +107,8 @@ class Round {
         return $this->numbers;
     }
 
-    public function getdrawnNumbers() {
-        return $this->drawnNumbers;
+    public function getId() {
+        return $this->id;
     }
 
     public function getWinners() {
@@ -173,41 +131,35 @@ class Round {
         return $this->jackpotNumber;
     }
 
-    public function fromDb($db) {
-        $sql = "SELECT * FROM rounds ORDER BY roundId DESC LIMIT 1";
+    private function fromDb($db) {
+        // to be cleaned up with new db schema
+
+        $sql = "SELECT * FROM rounds ORDER BY id DESC LIMIT 1";
         $round = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
         
-        if (empty($round['drawnNumbers'])) {
-            $this->drawnNumbers = [];
-        }
-        else {
-            $this->drawnNumbers = explode(';', $round['drawnNumbers']);
-        }
-
-        if (empty($round["numbers"]) && empty($this->drawnNumbers)) {
-            $this->numbers = range(1, 90);
-            shuffle($this->numbers);
-        }
-        else {
-            $this->numbers = explode(';', $round['tall']);
+        $sql = "SELECT drawing.number FROM drawing WHERE drawing.timestamp IS NOT NULL ORDER BY drawing.timestamp"
+        $drawnNumbers = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $numbers = [];
+        foreach ($drawnNumbers as $number) {
+            $numbers[] = (int)$number['number'];
         }
 
-        $sql = "SELECT nights.jackpotNumber, nights.jackpot FROM nights WHERE nightId = :nightId";
+        $sql = "SELECT game.jackpotNumber, game.jackpot FROM game WHERE id = :game";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(":nightId", $round['nightId'], PDO::PARAM_INT);
+        $stmt->bindParam(":game", $round['game'], PDO::PARAM_INT);
         $stmt->execute();
-        $night = $stmt->fetch(PDO::FETCH_ASSOC);
-        $jackpotNumber = $night['jackpotNumber'];
-        $jackpot = $night['jackpot'];
+        $game = $stmt->fetch(PDO::FETCH_ASSOC);
+        $jackpotNumber = $game['jackpotNumber'];
+        $jackpot = $game['jackpot'];
 
-        $stmt = $db->prepare("SELECT winners.winnerId, customers.name, places.place, " .
+        $stmt = $db->prepare("SELECT winners.id, players.name, places.place, " .
             "winners.price FROM winners " . 
-            "INNER JOIN customers ON winners.customerId = customers.customerId " .
-            "INNER JOIN places ON customers.placeId = places.placeId " .
-            "WHERE winners.roundId = :roundId AND " .
-            "winners.rows = :rows ORDER BY winners.winnerId");
-        $stmt->bindParam(":omgangid", $round['roundId'], PDO::PARAM_INT);
-        $stmt->bindParam(":rows", $round['rows'], PDO::PARAM_INT);
+            "INNER JOIN players ON winners.player = players.id " .
+            "INNER JOIN places ON players.place = places.id " .
+            "WHERE winners.round = :round AND " .
+            "winners.row = :row ORDER BY winners.id");
+        $stmt->bindParam(":round", $round['id'], PDO::PARAM_INT);
+        $stmt->bindParam(":rows", $round['row'], PDO::PARAM_INT);
         $stmt->execute();
         $winners = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -217,7 +169,10 @@ class Round {
         $this->jackpotNumber = $jackpotNumber;
         $this->jackpot = $jackpot;
         $this->winners = $winners;
+        $this->id = $round['id'];
+    }
 
-        return $round['roundId'];
+    public function save() {
+
     }
 }
