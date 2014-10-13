@@ -1,10 +1,6 @@
 <?php
 
 class Request {
-    static private function json($array) {
-        return json_encode($array);
-    }
-
     static public function gamestatus($db) {
         // uses the following tables: games, rounds, drawing, employees
 
@@ -48,7 +44,6 @@ class Request {
         foreach($drawn as $number) {
             $numbers[] = (int)$number['number'];
         }
-     
         return json_encode(["status" => true, "gamestatus" => "round", 
                             "jackpot" => (int)$game['jackpot'], 
                             "jackpotNumber" => (int)$game['jackpot_number'], 
@@ -125,7 +120,7 @@ class Request {
         $stmt->bindValue(":jackpot", $jackpot, PDO::PARAM_INT);
         $stmt->execute();
         
-        return self::json(["status" => true,
+        return json_encode(["status" => true,
                            "jackpot" => $jackpot,
                            "jackpotNumber" => $jackpotNumber]);
     }
@@ -152,7 +147,7 @@ class Request {
         // uses the following tables: rounds, games, winners, places
 
         if (!($_GET['type'] == "R" || $_GET['type'] == "R")) {
-            return self::json(["status" => false, "error" => "Invalid type"]);
+            return json_encode(["status" => false, "error" => "Invalid type"]);
         }
 
         $sql = "SELECT games.id FROM games ORDER BY id DESC LIMIT 1";
@@ -169,7 +164,7 @@ class Request {
         $round = $db->lastInsertId();
 
         if ($stmt->rowCount() != 1) {
-            return self::json(["status" => false, "error" => "Database error"]);
+            return json_encode(["status" => false, "error" => "Database error"]);
         }
 
         if (isset($_GET['winners'])) {
@@ -180,11 +175,11 @@ class Request {
             $stmt->bindValue(":round", $round, PDO::PARAM_INT);
             $stmt->execute();
 
-            self::json(["status" => true, 
+            json_encode(["status" => true, 
                 "winners" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         }
 
-        return self::json(["status" => true]);
+        return json_encode(["status" => true]);
 
     }
 }

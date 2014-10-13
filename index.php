@@ -84,3 +84,5 @@ require_once "Side.php";
 $side = new Side(10000);
 $side->lagSide();
 print_r($side->hentSide());
+
+?>
