@@ -8,65 +8,55 @@ class Request {
     static public function gamestatus($db) {
         // uses the following tables: games, rounds, drawing, employees
 
-        $sql = "SELECT * FROM games WHERE date = CURDATE() LIMIT 1";
+        $sql = ("SELECT g.id, g.date, g.jackpot_number, g.jackpot, " .
+                "em1.name AS producer, em2.name AS presenter " .
+                "FROM games g " .
+                "JOIN employees em1 ON g.producer = em1.id " .
+                "JOIN employees em2 ON g.presenter = em2.id " .
+                "WHERE g.date = CURDATE() " .
+                "LIMIT 1");
+
         $game = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
 
-        if ($game === false) {
-            return self::json(["status" => true, "gamestatus" => "notStarted"]);
+        if (empty($game)) {
+            return json_encode(["status" => true, "gamestatus" => "notStarted"]);
         }
 
         // game started, let's find a round
         $sql = "SELECT * FROM rounds WHERE game = :game ORDER BY id DESC LIMIT 1";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam(":game", $game['id']);
+        $stmt->bindValue(":game", $game['id']);
         $stmt->execute();
         $round = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // fetch producer
-        $sql = "SELECT employees.name FROM games INNER JOIN employees " .
-            "ON games.producer = employees.id WHERE games.id = :game LIMIT 1";
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(":game", $game['id']);
-        $stmt->execute();
-        $producer = $stmt->fetchColumn(0);
+        $producer = $game["producer"];
+        $presenter = $game["presenter"];
 
-        // fetch presenter
-        $sql = "SELECT employees.name FROM games INNER JOIN employees " .
-            "ON games.presenter = employees.id WHERE games.id = :game LIMIT 1";
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(":game", $game['id']);
-        $stmt->execute();
-        $presenter = $stmt->fetchColumn(0);
-
-        if ($round === false) {
-            return self::json(["status" => true, "gamestatus" => "noRound", 
-                "jackpot" => $game['jackpot'], 
-                "jackpotNumber" => $game['jackpot_number'],
-                "producer" => $producer, "presenter" => $presenter]);
+        if (!$round) {
+            return json_encode(["status" => true, "gamestatus" => "noRound", 
+                                "jackpot" => $game['jackpot'], 
+                                "jackpotNumber" => $game['jackpot_number'],
+                                "producer" => $producer, "presenter" => $presenter]);
         }
 
-        // round started. Output data
-        $sql = "SELECT drawing.number FROM drawing WHERE " .
-            "picked = 1 ORDER BY drawing.when";
+        // round started, find the drawn numbers
+        $sql = ("SELECT drawing.number FROM drawing WHERE " .
+                "picked = 1 ORDER BY drawing.when");
         $drawn = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
         $numbers = [];
         foreach($drawn as $number) {
             $numbers[] = (int)$number['number'];
         }
-
-        return self::json(["status" => true, "gamestatus" => "round", 
-                "jackpot" => (int)$game['jackpot'], 
-                "jackpotNumber" => (int)$game['jackpot_number'], 
-                "type" => $round['type'], "name" => (int)$round['name'], 
-                "numbers" => $numbers, 
-                "rows" => (int)$round['rows'], "producer" => $producer, 
-                "presenter" => $presenter]);
+     
+        return json_encode(["status" => true, "gamestatus" => "round", 
+                            "jackpot" => (int)$game['jackpot'], 
+                            "jackpotNumber" => (int)$game['jackpot_number'], 
+                            "type" => $round['type'], "name" => (int)$round['name'], 
+                            "numbers" => $numbers, 
+                            "rows" => (int)$round['rows'], "producer" => $producer, 
+                            "presenter" => $presenter]);
     }
-
-    // here stuff should happen! :)
-    static public function startRound($db) {
-    }
-
 
     static public function startGame($db) {
          // uses the following tables: employees, games
@@ -129,10 +119,10 @@ class Request {
                 ":jackpot)");
 
         $stmt = $db->prepare($sql);
-        $stmt->bindValue(":presenter", $presenter);
-        $stmt->bindValue(":producer", $producer);
-        $stmt->bindValue(":jackpotNumber", $jackpotNumber);
-        $stmt->bindValue(":jackpot", $jackpot);
+        $stmt->bindValue(":presenter", $presenter, PDO::PARAM_INT);
+        $stmt->bindValue(":producer", $producer, PDO::PARAM_INT);
+        $stmt->bindValue(":jackpotNumber", $jackpotNumber, PDO::PARAM_INT);
+        $stmt->bindValue(":jackpot", $jackpot, PDO::PARAM_INT);
         $stmt->execute();
         
         return self::json(["status" => true,
@@ -168,9 +158,8 @@ class Request {
         $sql = "SELECT games.id FROM games ORDER BY id DESC LIMIT 1";
         $game = $db->query($sql)->fetchColumn(0);
 
-
-        $sql = "INSERT INTO rounds (started, game, type, name, rows) " .
-            "VALUES (NOW(), :game, :type, :name, :rows)";
+        $sql = ("INSERT INTO rounds (game, type, name, rows) " .
+                "VALUES (:game, :type, :name, :rows)");
         $stmt = $db->prepare($sql);
         $stmt->bindValue(":game", $game, PDO::PARAM_INT);
         $stmt->bindValue(":type", $_GET['type'], PDO::PARAM_STR);
