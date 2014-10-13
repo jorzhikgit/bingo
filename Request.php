@@ -6,9 +6,11 @@ class Request {
         foreach ($array as $key => $value) {
             if (gettype($value) == "array") {
                 $result[$key] = traverseEncode($value);
-            } elseif (gettype($value) == "string") {
+            }
+            elseif (gettype($value) == "string") {
                 $result[$key] = utf8_encode($value);
-            } else {
+            }
+            else {
                 $result[$key] = $value;
             }
         }
@@ -66,55 +68,62 @@ class Request {
         $stmt->execute();
         $presenter = (int)$stmt->fetchColumn(0);
 
-        if ($producer === false) {
-            // no one with that name. INSERT it
-            $sql = "INSERT INTO employees name VALUES(:name)";
-            $stmt = $db->prepare($sql);
-            $stmt->bindValue(":name", $_GET['producer'], PDO::PARAM_STR);
+        $sql = "INSERT INTO employees (name) VALUES (:name)";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(":name", $employee, PDO::PARAM_STR);
+
+        if (empty($producer)) {
+            $employee = $_GET["producer"];
             $stmt->execute();
             $producer = $db->lastInsertId();
         }
 
-        if ($presenter === false) {
-            // no one with that name. INSERT it
-            $sql = "INSERT INTO employees name VALUES(:name)";
-            $stmt = $db->prepare($sql);
-            $stmt->bindValue(":name", $_GET['presenter'], PDO::PARAM_STR);
+        if (empty($presenter)) {
+            $employee = $_GET["presenter"];
             $stmt->execute();
             $presenter = $db->lastInsertId();
         }
 
-        // fecth game data
-        $sql = "SELECT games.jackpot, games.got_jackpot FROM games ORDER BY id DESC LIMIT 2";
-        $previousGame = $db->query($sql)->fetch(PDO::FETCH_ASSOC)[1];
+        // fetch game data
+        $sql = ("SELECT games.jackpot, games.got_jackpot " .
+                "FROM games ORDER BY date DESC LIMIT 1");
 
-        if ($previousGame === false) {
+        $previousGame = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+
+        if (empty($previousGame) or $previousGame['got_jackpot']) {
             // first game ever
             $jackpot = 5000;
-        } elseif ($previousGame['got_jackpot'] === true) {
-            $jackpot = 5000;
-        } else {
+        }
+        elseif ($previousGame["jackpot"] == 20000) {
+            $jackpot = $previousGame["jackpot"];
+        }
+        else {
             $jackpot = $previousGame['jackpot'] + 500;
         }
 
         $jackpotNumber = mt_rand(1, 90);
 
-        $sql = "INSERT INTO games (date, presenter, producer, jackpot_number, jackpot, got_jackpot) " .
-            "VALUES(CURDATE(), :presenter, :producer, :jackpotNumber, :jackpot, 'N')";
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(":presenter", $presenter, PDO::PARAM_INT);
-        $stmt->bindValue(":producer", $producer, PDO::PARAM_INT);
-        $stmt->bindValue(":jackpotNumber", $jackpotNumber, PDO::PARAM_INT);
-        $stmt->bindValue(":jackpot", $jackpot, PDO::PARAM_INT);
-        $stmt->execute();
+        $sql = ("INSERT INTO games (date, presenter, producer, " .
+                "jackpot_number, jackpot) " .
+                "VALUES (CURDATE(), :presenter, :producer, :jackpotNumber, " .
+                ":jackpot)");
 
-        return self::json(["status" => true, "jackpot" => $jackpot, "jackpotNumber" => $jackpotNumber]);
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(":presenter", $presenter);
+        $stmt->bindValue(":producer", $producer);
+        $stmt->bindValue(":jackpotNumber", $jackpotNumber);
+        $stmt->bindValue(":jackpot", $jackpot);
+        $stmt->execute();
+        
+        return self::json(["status" => true,
+                           "jackpot" => $jackpot,
+                           "jackpotNumber" => $jackpotNumber]);
     }
 
     static public function getEmployee($db) {
         // uses the following tables: employees
 
-        $term = '%' . utf8_decode($_GET['term']) . '%';
+        $term = '%' . $_GET['term'] . '%';
 
         $sql = "SELECT employees.name FROM employees WHERE name LIKE :term";
         $stmt = $db->prepare($sql);
@@ -123,7 +132,7 @@ class Request {
 
         $array = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $data) {
-            $array[] = utf8_encode($data['name']);
+            $array[] = $data['name'];
         }
 
         return self::json($array);
