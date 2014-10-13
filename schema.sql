@@ -36,10 +36,9 @@ DROP TABLE IF EXISTS `drawing`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `drawing` (
   `number` tinyint(3) unsigned NOT NULL,
-  `picked` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `when` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `timestamp` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY `number` (`number`),
-  UNIQUE KEY `when` (`when`)
+  UNIQUE KEY `timestamp` (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `employees`;
