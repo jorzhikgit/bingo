@@ -28,11 +28,11 @@ p {
 	width: 65%;
 }
 
-#jackpotNumber, #jackpot, #rows {
+#jackpotNumber, #jackpot, #rows, #studio {
 	font-size: 150%;
 }
 
-#jackpot {
+#jackpot, #rows {
 	margin-bottom: 1em;
 }
 
