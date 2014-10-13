@@ -22,7 +22,8 @@ $(document).ready(function () {
                     case "noRound":
                         $("#modal").html('<h2>Starte omgang?</h2>' +
                             '<p>Lykketall: ' + data.jackpotNumber + ' - Lykkepott: ' +
-                            data.jackpot + '</p><p>' +
+                            data.jackpot + '</p><p>Avvikler: ' + data.presenter +
+                            '<br />Produsent: ' + data.producer + '</p><p>' +
                             '<a href="#" class="button" id="startRound">' +
                             'Ja!</a></p>').modal({clickClose: false});
                         bindStartRound();
@@ -30,7 +31,7 @@ $(document).ready(function () {
 
                     case "round":
                         for (var i = 0; i < data.numbers.length; i++) {
-                            var number = data.numebrs[i];
+                            var number = data.numbers[i];
                             if (number == "") { break; }
                             lastNumber = number;
                             newNumber(number);
@@ -40,6 +41,12 @@ $(document).ready(function () {
                         $("#jackpot").text("Lykkepott: kr. " + data.jackpot + ",-");
                         $("#rows").text("Antall rader: " + 
                             data.rows);
+                        $("#studio").html("Avvikler: " + data.presenter + 
+                            "<br />Produsent: " + data.producer);
+
+                        var name = (data.type == "P") ? "Pausespill" : "Spilleomgang " 
+                            + data.name;
+                        $("#name").text(name);
                         break;
                 }
             }
@@ -285,8 +292,8 @@ $(document).ready(function () {
         $("#startRound").click(function (e) {
             e.preventDefault();
 
-            $.getJSON("json.php?action=startRound" +
-                "&rows=1&type=V&name=1", function (data) {
+            $.getJSON("json.php?action=newRound" +
+                "&rows=1&type=R&name=1", function (data) {
                 if (data.status) {
                     $.modal.close();
                     init();
@@ -336,8 +343,9 @@ $(document).ready(function () {
         });
 
         for (var i = 0; i < winners.length; i++) {
-            $("#winners").append('<li>' + winners[i].navn + ", " + winners[i].sted + 
-                ": Kroner " + winners[i].utbetaling + ",-</li>");
+            $("#winners").append('<li>' + winners[i].name + ", " + 
+                winners[i].place + 
+                ": Kroner " + winners[i].price + ",-</li>");
         }
 
         $.modal.resize();
