@@ -54,7 +54,7 @@ class Request {
     }
 
     static public function startGame($db) {
-         // uses the following tables: employees, games
+         // uses the following tables: employees, games, drawing
 
         // prepare the SQL to look up employees
         $sql = "SELECT employees.id FROM employees WHERE name = :name LIMIT 1";
@@ -154,12 +154,11 @@ class Request {
         $game = $db->query($sql)->fetchColumn(0);
 
         $sql = ("INSERT INTO rounds (game, type, name, rows) " .
-                "VALUES (:game, :type, :name, :rows)");
+                "VALUES (:game, :type, :name, 1)");
         $stmt = $db->prepare($sql);
-        $stmt->bindValue(":game", $game, PDO::PARAM_INT);
-        $stmt->bindValue(":type", $_GET['type'], PDO::PARAM_STR);
-        $stmt->bindValue(":name", $_GET['name'], PDO::PARAM_INT);
-        $stmt->bindValue(":rows", $_GET['rows'], PDO::PARAM_INT);
+        $stmt->bindParam(":game", $game, PDO::PARAM_INT);
+        $stmt->bindParam(":type", $_GET['type'], PDO::PARAM_STR);
+        $stmt->bindParam(":name", $_GET['name'], PDO::PARAM_INT);
         $stmt->execute();
         $round = $db->lastInsertId();
 
@@ -167,8 +166,29 @@ class Request {
             return json_encode(["status" => false, "error" => "Database error"]);
         }
 
+         // reset the numbers and save old ones
+        $sql = "SELECT drawing.number FROM drawing WHERE picked = 1 ORDER BY drawing.when";
+        $previousNumbers = [];
+        foreach ($db->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $number) {
+            $previousNumbers[] = $number['number'];
+        }
+        $previousNumbers = implode(";", $previousNumbers);
+
+        $sql = "SELECT rounds.id FROM rounds ORDER BY rounds.id DESC LIMIT 1";
+        $previousRound = $db->query($sql)->fetchColumn(0);
+
+        $sql = "UPDATE rounds SET numbers = :numbers WHERE id = :id";
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(":numbers", $previousNumbers, PDO::PARAM_STR);
+        $stmt->bindValue(":id", $previousRound, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $sql = "UPDATE drawing SET drawing.picked = 0, drawing.when = NULL";
+        $db->exec($sql);
+
         if (isset($_GET['winners'])) {
             // requester has opted for a list of winners
+
             $sql = "SELECT winners.name, places.place, winners.price FROM " .
                 "winners WHERE :round";
             $stmt = $db->prepare($sql);
@@ -180,6 +200,9 @@ class Request {
         }
 
         return json_encode(["status" => true]);
+    }
+
+    static public function draw($db) {
 
     }
 }

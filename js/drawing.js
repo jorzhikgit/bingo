@@ -308,16 +308,15 @@ $(document).ready(function () {
 
             $.getJSON("json.php?action=gamestatus", function (data) {
                 if (data.status) {
-                    if (data.name == 3) {
+                    if (parseInt(data.name) == 3) {
                         var type = "P";
-                        var navn = 0;
+                        var name = 0;
                     } else {
                         var type = "R";
-                        var navn = data.name + 1;
+                        var name = parseInt(data.name) + 1;
                     }
                     $.getJSON("json.php?action=newRound" +
-                        "&rows=" + (parseInt(data.antallRader) + 1) +
-                        "&type=" + type + "&winners=1&name=" + navn,
+                        "&type=" + type + "&winners=1&name=" + name,
                         function (data) {
                             if (data.status) {
                                 listWinners(data.winners);
