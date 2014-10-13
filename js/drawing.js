@@ -60,12 +60,12 @@ $(document).ready(function () {
     function drawNumber(e) {
         e.preventDefault();
 
-        $.getJSON("json.php?action=draw&last=" + forrigeTall, function (data) {
+        $.getJSON("json.php?action=draw&last=" + lastNumber, function (data) {
             if (data.status) {
-                for (var i = 0; i < data.tallene.length; i++) {
-                    var tall = data.tallene[i];
-                    forrigeTall = tall;
-                    nyttTall(tall);
+                for (var i = 0; i < data.numbers.length; i++) {
+                    var number = data.numbers[i];
+                    lastNumber = number;
+                    newNumber(number);
                 }
             }
         });

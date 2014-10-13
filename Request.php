@@ -186,6 +186,9 @@ class Request {
         $sql = "UPDATE drawing SET drawing.picked = 0, drawing.when = NULL";
         $db->exec($sql);
 
+        // let the producer's websockets know
+        file_get_contents('http://localhost:4000/newRound');
+
         if (isset($_GET['winners'])) {
             // requester has opted for a list of winners
 
@@ -195,7 +198,7 @@ class Request {
             $stmt->bindValue(":round", $round, PDO::PARAM_INT);
             $stmt->execute();
 
-            json_encode(["status" => true, 
+            return json_encode(["status" => true, 
                 "winners" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         }
 
@@ -203,6 +206,42 @@ class Request {
     }
 
     static public function draw($db) {
+        // uses the following tables: drawing
 
+        // get old numbers
+        $sql = "SELECT drawing.number FROM drawing WHERE picked = 1 ORDER BY drawing.when";
+        $drawn = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+        // select new number
+        $sql = "SELECT drawing.number from drawing WHERE picked = 0 ORDER BY rand() LIMIT 1";
+        $number = $db->query($sql)->fetchColumn(0);
+
+        // save it
+        $sql = "UPDATE drawing SET drawing.picked = 1, drawing.when = NOW() " .
+            "WHERE drawing.number = :number";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(":number", $number, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // getting the numbers the requestor asked for
+        $numbers = [];
+        $isCollecting = ($_GET['last'] == 0 || !isset($_GET['last'])) ? true : false;
+        foreach ($drawn as $drawnNumber) {
+            if ($isCollecting) {
+                $numbers[] = (int)$drawnNumber['number'];
+            }
+
+            if ($drawnNumber == $_GET['last']) {
+                $isCollecting = true;
+            }
+        }
+
+        // adding the newly drawn number
+        $numbers[] = $number;
+
+        // let the producer's websockets know
+        file_get_contents('http://localhost:4000/newNumber');
+
+        return json_encode(["status" => true, "numbers" => $numbers]);
     }
 }

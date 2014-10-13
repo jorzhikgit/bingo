@@ -13,7 +13,7 @@ $(document).ready(function () {
         socket.emit("requestNumbers", 0);
 
         socket.on("numbers", function (numbers) {
-	    addNumbers(numbers);
+        addNumbers(numbers);
         });
 
         socket.on("number", function (number) {
@@ -21,7 +21,7 @@ $(document).ready(function () {
         });
 
         socket.on("round", function (data) {
-	    console.log(data);
+        console.log(data);
             $("#jackpotNumber").text("Lykketall: " + data.jackpot_number);
             $("#jackpot").text("Lykkepott: kr. " + data.jackpot + ",-");
             $("#rows").text("Antall rader: " + data.rows);
@@ -29,13 +29,13 @@ $(document).ready(function () {
     });
 
     function addNumbers(numbers) {
-	$("#count").text(numbers.length);
-	$("#drawn").text(numbers.join(", "));
-	$("#numberIs").text(numbers[numbers.length - 1]);
+        $("#count").text(numbers.length);
+        $("#numberIs").text(numbers[numbers.length - 1]);
+        $("#drawn").text(numbers.reverse().join(", "));
 
-	numbers.forEach(function(number) {
-	    $("#number-" + number).text(number);
-	});
+        numbers.forEach(function(number) {
+            $("#number-" + number).text(number);
+        });
     }
 
     function addNumber(number) {
