@@ -1,10 +1,6 @@
 <?php
 
 class Request {
-    static private function json($array) {
-        return json_encode($array);
-    }
-
     static public function gamestatus($db) {
         // uses the following tables: games, rounds, drawing, employees
 
@@ -12,7 +8,7 @@ class Request {
         $game = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
 
         if ($game === false) {
-            return self::json(["status" => true, "gamestatus" => "notStarted"]);
+            return json_encode(["status" => true, "gamestatus" => "notStarted"]);
         }
 
         // game started, let's find a round
@@ -39,7 +35,7 @@ class Request {
         $presenter = $stmt->fetchColumn(0);
 
         if ($round === false) {
-            return self::json(["status" => true, "gamestatus" => "noRound", 
+            return json_encode(["status" => true, "gamestatus" => "noRound", 
                 "jackpot" => $game['jackpot'], 
                 "jackpotNumber" => $game['jackpot_number'],
                 "producer" => $producer, "presenter" => $presenter]);
@@ -54,7 +50,7 @@ class Request {
             $numbers[] = (int)$number['number'];
         }
 
-        return self::json(["status" => true, "gamestatus" => "round", 
+        return json_encode(["status" => true, "gamestatus" => "round", 
                 "jackpot" => (int)$game['jackpot'], 
                 "jackpotNumber" => (int)$game['jackpot_number'], 
                 "type" => $round['type'], "name" => (int)$round['name'], 
@@ -135,7 +131,7 @@ class Request {
         $stmt->bindValue(":jackpot", $jackpot);
         $stmt->execute();
         
-        return self::json(["status" => true,
+        return json_encode(["status" => true,
                            "jackpot" => $jackpot,
                            "jackpotNumber" => $jackpotNumber]);
     }
@@ -162,7 +158,7 @@ class Request {
         // uses the following tables: rounds, games, winners, places
 
         if (!($_GET['type'] == "R" || $_GET['type'] == "R")) {
-            return self::json(["status" => false, "error" => "Invalid type"]);
+            return json_encode(["status" => false, "error" => "Invalid type"]);
         }
 
         $sql = "SELECT games.id FROM games ORDER BY id DESC LIMIT 1";
@@ -180,7 +176,7 @@ class Request {
         $round = $db->lastInsertId();
 
         if ($stmt->rowCount() != 1) {
-            return self::json(["status" => false, "error" => "Database error"]);
+            return json_encode(["status" => false, "error" => "Database error"]);
         }
 
         if (isset($_GET['winners'])) {
@@ -191,11 +187,11 @@ class Request {
             $stmt->bindValue(":round", $round, PDO::PARAM_INT);
             $stmt->execute();
 
-            self::json(["status" => true, 
+            json_encode(["status" => true, 
                 "winners" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         }
 
-        return self::json(["status" => true]);
+        return json_encode(["status" => true]);
 
     }
 }
