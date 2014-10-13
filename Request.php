@@ -37,7 +37,7 @@ class Request {
 
         // round started, find the drawn numbers
         $sql = ("SELECT drawing.number FROM drawing WHERE " .
-                "picked = 1 ORDER BY drawing.when");
+                "drawing.timestamp IS NOT NULL ORDER BY drawing.timestamp");
         $drawn = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         $numbers = [];
@@ -167,9 +167,10 @@ class Request {
         }
 
          // reset the numbers and save old ones
-        $sql = "SELECT drawing.number FROM drawing WHERE picked = 1 ORDER BY drawing.when";
+        $sql = "SELECT drawing.number FROM drawing WHERE drawing.timestamp IS NOT NULL ORDER BY drawing.timestamp";
+        $drawnNumbers = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $previousNumbers = [];
-        foreach ($db->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $number) {
+        foreach ($drawnNumbers as $number) {
             $previousNumbers[] = $number['number'];
         }
         $previousNumbers = implode(";", $previousNumbers);
@@ -183,7 +184,7 @@ class Request {
         $stmt->bindValue(":id", $previousRound, PDO::PARAM_INT);
         $stmt->execute();
 
-        $sql = "UPDATE drawing SET drawing.picked = 0, drawing.when = NULL";
+        $sql = "UPDATE drawing SET drawing.timestamp = NULL";
         $db->exec($sql);
 
         // let the producer's websockets know
@@ -209,15 +210,15 @@ class Request {
         // uses the following tables: drawing
 
         // get old numbers
-        $sql = "SELECT drawing.number FROM drawing WHERE picked = 1 ORDER BY drawing.when";
+        $sql = "SELECT drawing.number FROM drawing WHERE drawing.timestamp IS NOT NULL ORDER BY drawing.timestamp";
         $drawn = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
         // select new number
-        $sql = "SELECT drawing.number from drawing WHERE picked = 0 ORDER BY rand() LIMIT 1";
+        $sql = "SELECT drawing.number from drawing WHERE drawing.timestamp IS NULL ORDER BY rand() LIMIT 1";
         $number = $db->query($sql)->fetchColumn(0);
 
         // save it
-        $sql = "UPDATE drawing SET drawing.picked = 1, drawing.when = NOW() " .
+        $sql = "UPDATE drawing SET drawing.drawing.timestamp IS NOT NULL, drawing.timestamp = NOW() " .
             "WHERE drawing.number = :number";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(":number", $number, PDO::PARAM_INT);
