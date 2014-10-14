@@ -1,3 +1,8 @@
+<?php
+require_once "../l18n.php";
+l18n::set_path('../lang/');
+header('Content-Type: application/javascript; charset=utf-8');
+?>
 var port = 4000;
 
 $(document).ready(function () {
@@ -18,9 +23,9 @@ $(document).ready(function () {
 
         socket.on("round", function (data) {
         console.log(data);
-            $("#jackpotNumber").text("Lykketall: " + data.jackpot_number);
-            $("#jackpot").text("Lykkepott: kr. " + data.jackpot + ",-");
-            $("#rows").text("Antall rader: " + data.current_row);
+            $("#jackpotNumber").text("<?php __('producer.jackpotNumber', 'Jackpot number'); ?>: " + data.jackpot_number);
+            $("#jackpot").text("<?php __('producer.jackpot', 'Jackpot'); ?>: <?php __('producer.currency', '$'); ?>" + data.jackpot + ",-");
+            $("#rows").text("<?php __('producer.currentRows', 'Number of rows'); ?>: " + data.current_row);
         });
     });
 

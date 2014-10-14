@@ -1,20 +1,23 @@
+<?php
+require_once "l18n.php";
+?>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Produsent | Bingo</title>
+	<title><?php __('producer.title', 'Producer'); ?> | Bingo</title>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" type="text/css" href="css/producer.css" />
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<script src="js/producer.js"></script>
+	<script src="js/producer.php"></script>
 </head>
 <body>
-	<div class="noJs"><strong>Du må ha JavaScript for å bruke denne applikasjonen!</strong></div>
+	<div class="noJs"><strong><?php __('producer.js', 'You must have JavaScript turned on in order to use this application.'); ?></strong></div>
 	<div id="drawn"></div>
 	
 	<div id="left">
 		<div id="jackpotNumber"></div>
 		<div id="jackpot"></div>
-		<div id="countWrapper"><p>Antall trekk: <span id="count">0</span></p></div>
+		<div id="countWrapper"><p><?php __('producer.count', 'Number drawn'); ?>: <span id="count">0</span></p></div>
 		<div id="rows"></div>
 	</div>
 
