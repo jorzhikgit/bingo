@@ -1,88 +1,65 @@
 <?php
-// <html>
-// 	<head>
-// 		<title>Bingo</title>
-// 		<meta charset="utf-8" />
-// 		<style>
-// 			table {
-// 				border-collapse: collapse;
-// 			}
-
-// 			td {
-// 				width: 2em;
-// 				border: 1px solid black;
-// 			}
-
-// 			.trekt {
-// 				background-color: green;
-// 				color: white;
-// 			}
-// 		</style>
-// 	</head>
-// 	<body>
+require_once "l18n.php";
 ?>
-<?php
-header('Content-Type: text/html; charset=utf-8');
-require_once "Blokk.php";
-require_once "Omgang.php";
-require_once "Hefte.php";
-require_once "Side.php";
+<!DOCTYPE html>
+<html>
+<head>
+    <title>index | Bingo</title>
+    <meta charset="utf-8" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <style>
+        body {
+            margin: 1em auto;
+            font-size: 16px;
+            width: 30em;
+            font-family: 'Open Sans', sans-serif;
+        }
 
-// $blokk = new Blokk(1);
-// $blokk->lagBlokk();
+        h1 {
+            text-align: center;
+        }
 
-// $omgang = new Omgang(1, "V", 37, 7000);
-// foreach(range(0, 60) as $i) {
-// 	$omgang->trekk();
-// }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            width: 24em;
+            margin: 0 auto;
+        }
 
-// $validert = $omgang->validerBlokk($blokk);
+        li {
+            float: left;
+            margin: 2em;
+            display: block;
+            width: 10em;
+        }
 
-// if (!$validert['harVunnet']) {
-// 	echo '<p>Vant ikke</p>';
-// } else {
-// 	echo $omgang->lagBlokkHTML($blokk, $validert['vinnerTallene']);
-// 	echo '<p>Vinnertall: ' . $validert['vinnerTall'] . '</p>';
-// }
+        li:first-child {
+            margin-left: 0;
+        }
 
-// $blokker = [];
-// $i = 0;
-// foreach(range(0, 4) as $omgang) {
-// 	$blokker[$omgang] = [];
-// 	foreach(range(0, 5) as $blokk) {
-// 		$kontrollnr = 10000 + $i;
-// 		$blokker[$omgang][$blokk] = new Blokk($kontrollnr);
-// 		$blokker[$omgang][$blokk]->lagBlokk();
-// 		$i++;
-// 	}
-// }
-// unset($i);
+        li:last-child {
+            margin-right: 0;
+        }
 
-// $hefte = new Hefte($blokker, "V", 12345);
+        a:link, a:visited {
+            text-decoration: none;
+            color: white;
+            background-color: #0074d9;
+            padding: 1em 2em;
+            border-radius: 0.5em;
+        }
 
-// foreach(range(0, 5) as $blokk) {
-// 	$kontrollnr = 10000 + $i;
-// 	$blokker[$blokk] = new Blokk($kontrollnr);
-// 	$blokker[$blokk]->lagBlokk();
-// 	$i++;
-// }
-
-// $hefte = new Hefte([$blokker], "P", 12346);
-// echo $hefte->lagLatex();
-
-// $blokk = new Blokk(1);
-// $blokk->lagBlokk();
-
-// $blokk = new Blokk(99999); // faktisk nummer fra db
-// $blokk->lagBlokkFraTekst(";.;;14;;.;;34;;40;;54;;.;;.;;80;-;.;;17;;23;;35;;.;;.;;61;;70;;82;-;.;;18;;.;;.;;48;;.;;.;");
-// print_r($blokk->hentBlokk());
-
-// $blokk = new Blokk(1);
-// $blokk->lagBlokk();
-// print_r($blokk->hentBlokk());
-
-$side = new Side(10000);
-$side->lagSide();
-print_r($side->hentSide());
-
-?>
+        a:hover, a:active {
+            background-color: #001f3f;
+        }
+    </style>
+</head>
+</html>
+<body>
+    <h1><?php __('index.iAm', 'I am a...'); ?></h1>
+    <ul>
+        <li><a href="drawing.php"><?php __('index.presenter', 'Presenter'); ?></a></li>
+        <li><a href="producer.php"><?php __('index.producer', 'Producer'); ?></a></li>
+    </ul>
+</body>
+</html>
