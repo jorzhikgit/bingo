@@ -49,7 +49,7 @@ class Request {
                             "jackpotNumber" => (int)$game['jackpot_number'], 
                             "type" => $round['type'], "name" => (int)$round['name'], 
                             "numbers" => $numbers, 
-                            "rows" => (int)$round['rows'], "producer" => $producer, 
+                            "rows" => (int)$round['current_row'], "producer" => $producer, 
                             "presenter" => $presenter]);
     }
 
@@ -153,7 +153,7 @@ class Request {
         $sql = "SELECT games.id FROM games ORDER BY id DESC LIMIT 1";
         $game = $db->query($sql)->fetchColumn(0);
 
-        $sql = ("INSERT INTO rounds (game, type, name, rows) " .
+        $sql = ("INSERT INTO rounds (game, type, name, current_row) " .
                 "VALUES (:game, :type, :name, 1)");
         $stmt = $db->prepare($sql);
         $stmt->bindParam(":game", $game, PDO::PARAM_INT);

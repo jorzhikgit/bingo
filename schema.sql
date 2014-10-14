@@ -101,7 +101,7 @@ CREATE TABLE `rounds` (
   `type` char(1) NOT NULL,
   `name` tinyint(4) unsigned NOT NULL,
   `numbers` text,
-  `rows` tinyint(4) unsigned NOT NULL,
+  `current_row` tinyint(4) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `started` (`started`),
   KEY `game` (`game`),

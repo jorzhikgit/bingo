@@ -20,7 +20,7 @@ $(document).ready(function () {
         console.log(data);
             $("#jackpotNumber").text("Lykketall: " + data.jackpot_number);
             $("#jackpot").text("Lykkepott: kr. " + data.jackpot + ",-");
-            $("#rows").text("Antall rader: " + data.rows);
+            $("#rows").text("Antall rader: " + data.current_row);
         });
     });
 

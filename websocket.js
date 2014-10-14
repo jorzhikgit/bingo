@@ -41,7 +41,7 @@ function sendNumber() {
 }
 
 function newRound() {
-    var sql = "SELECT rounds.rows, g.jackpot, g.jackpot_number FROM rounds " + 
+    var sql = "SELECT rounds.current_row, g.jackpot, g.jackpot_number FROM rounds " + 
     "JOIN games g ON rounds.game = g.id " +
     "ORDER BY rounds.id DESC LIMIT 1"
     connection.query(sql, function (err, rows, fields) {
