@@ -146,24 +146,8 @@ class Request {
     static public function newRound($db) {
         // uses the following tables: rounds, games, winners, places
 
-        if (!($_GET['type'] == "R" || $_GET['type'] == "R")) {
+        if (!($_GET['type'] == "R" || $_GET['type'] == "P")) {
             return json_encode(["status" => false, "error" => "Invalid type"]);
-        }
-
-        $sql = "SELECT games.id FROM games ORDER BY id DESC LIMIT 1";
-        $game = $db->query($sql)->fetchColumn(0);
-
-        $sql = ("INSERT INTO rounds (game, type, name, current_row) " .
-                "VALUES (:game, :type, :name, 1)");
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(":game", $game, PDO::PARAM_INT);
-        $stmt->bindParam(":type", $_GET['type'], PDO::PARAM_STR);
-        $stmt->bindParam(":name", $_GET['name'], PDO::PARAM_INT);
-        $stmt->execute();
-        $round = $db->lastInsertId();
-
-        if ($stmt->rowCount() != 1) {
-            return json_encode(["status" => false, "error" => "Database error"]);
         }
 
          // reset the numbers and save old ones
@@ -186,6 +170,22 @@ class Request {
 
         $sql = "UPDATE drawing SET drawing.timestamp = NULL";
         $db->exec($sql);
+
+        $sql = "SELECT games.id FROM games ORDER BY id DESC LIMIT 1";
+        $game = $db->query($sql)->fetchColumn(0);
+
+        $sql = ("INSERT INTO rounds (game, type, name, current_row) " .
+                "VALUES (:game, :type, :name, 1)");
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(":game", $game, PDO::PARAM_INT);
+        $stmt->bindParam(":type", $_GET['type'], PDO::PARAM_STR);
+        $stmt->bindParam(":name", $_GET['name'], PDO::PARAM_INT);
+        $stmt->execute();
+        $round = $db->lastInsertId();
+
+        if ($stmt->rowCount() != 1) {
+            return json_encode(["status" => false, "error" => "Database error"]);
+        }
 
         // let the producer's websockets know
         file_get_contents('http://localhost:4000/newRound');

@@ -17,11 +17,6 @@ p {
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 }
-	#left .button {
-		margin: 2em 0;
-		font-size: 150%;
-		padding: 0.5em;
-	}
 
 #right {
 	float: right;

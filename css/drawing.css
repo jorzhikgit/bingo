@@ -18,7 +18,7 @@ p {
 	box-sizing: border-box;
 }
 	#left .button {
-		margin: 2em 0;
+		margin: 0.5em 0;
 		font-size: 150%;
 		padding: 0.5em;
 	}
@@ -163,3 +163,7 @@ p {
 		padding: 0.5em;
 		font-size: 115%;
 	}
+
+#left #newRound {
+	margin-top: 1.5em;
+}
