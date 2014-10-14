@@ -1,3 +1,8 @@
+<?php
+require_once "../l18n.php";
+l18n::set_path('../lang/');
+header('Content-Type: application/javascript; charset=utf-8');
+?>
 $(document).ready(function () {
     $(".noJs").hide();
 
@@ -9,23 +14,23 @@ $(document).ready(function () {
             if (data.status) {
                 switch (data.gamestatus) {
                     case "notStarted":
-                        $("#modal").html('<h2>Ikke startet</h2><div>' +
-                            '<label>Avvikler: <input type="text" id="presenter">' +
-                            '</label><br /><label>Produsent: ' +
+                        $("#modal").html('<h2><?php __('drawing.notStarted', 'Not started'); ?></h2><div>' +
+                            '<label><?php __('drawing.presenter', 'Presenter'); ?>: <input type="text" id="presenter">' +
+                            '</label><br /><label><?php __('drawing.producer', 'Producer'); ?>: ' +
                             '<input type="text" id="producer"></label><p>' +
                             '<a href="#" class="button" id="startGame">' +
-                            'Start spill!</a></p>').modal({clickClose: false});
+                            '<?php __('drawing.startGame', 'Start game'); ?></a></p>').modal({clickClose: false});
                         autocompleteStartGame();
                         bindStartGame();
                         break;
 
                     case "noRound":
-                        $("#modal").html('<h2>Starte omgang?</h2>' +
-                            '<p>Lykketall: ' + data.jackpotNumber + ' - Lykkepott: ' +
-                            data.jackpot + '</p><p>Avvikler: ' + data.presenter +
-                            '<br />Produsent: ' + data.producer + '</p><p>' +
+                        $("#modal").html('<h2><?php __('drawing.startRound', 'Start round'); ?>?</h2>' +
+                            '<p><?php __('drawing.jackpotNumber', 'Jackpot number'); ?>: ' + data.jackpotNumber + ' - <?php __('drawing.jackpot', 'Jackpot'); ?>: ' +
+                            data.jackpot + '</p><p><?php __('drawing.presenter', 'Presenter'); ?>: ' + data.presenter +
+                            '<br /><?php __('drawing.producer', 'Producer'); ?>: ' + data.producer + '</p><p>' +
                             '<a href="#" class="button" id="startRound">' +
-                            'Ja!</a></p>').modal({clickClose: false});
+                            '<?php __('drawing.yes', 'Yes'); ?></a></p>').modal({clickClose: false});
                         bindStartRound();
                         break;
 
@@ -37,14 +42,14 @@ $(document).ready(function () {
                             newNumber(number);
                         }
 
-                        $("#jackpotNumber").text("Lykketall: " + data.jackpotNumber);
-                        $("#jackpot").text("Lykkepott: kr. " + data.jackpot + ",-");
-                        $("#rows").text("Antall rader: " + 
+                        $("#jackpotNumber").text("<?php __('drawing.jackpotNumber', 'Jackpot number'); ?>: " + data.jackpotNumber);
+                        $("#jackpot").text("<?php __('drawing.jackpot', 'Jackpot'); ?>: <?php __('drawing.currency', '$'); ?>" + data.jackpot + ",-");
+                        $("#rows").text("<?php __('drawing.currentRows', 'Number of rows'); ?>: " + 
                             data.rows);
-                        $("#studio").html("Avvikler: " + data.presenter + 
-                            "<br />Produsent: " + data.producer);
+                        $("#studio").html("<?php __('drawing.presenter', 'Presenter'); ?>: " + data.presenter + 
+                            "<br /><?php __('drawing.producer', 'Producer'); ?>: " + data.producer);
 
-                        var name = (data.type == "P") ? "Pausespill" : "Spilleomgang " 
+                        var name = (data.type == "P") ? "<?php __('drawing.pauseRound', 'Pause round'); ?>" : "<?php __('drawing.regularRound', 'Round'); ?> " 
                             + data.name;
                         $("#name").text(name);
                         break;
@@ -79,8 +84,8 @@ $(document).ready(function () {
         e.preventDefault();
 
         $("#modal").html('<h2>Sikker på du vil starte ny omgang?</h2>' + 
-            '<a href="#" class="button" id="yesRound" style="margin-right:0.5em;">Ja</a>' +
-            '<a href="#" class="button" id="noRound">Nei</a>').modal({clickClose: false});
+            '<a href="#" class="button" id="yesRound" style="margin-right:0.5em;"><?php __('drawing.yes', 'Yes'); ?></a>' +
+            '<a href="#" class="button" id="noRound"><?php __('drawing.no', 'No'); ?></a>').modal({clickClose: false});
         bindNewRound();
     });
 
@@ -98,18 +103,18 @@ $(document).ready(function () {
         $("#verificationCode").val(""); // reset
         $.getJSON("json.php?action=verify&verification=" + verification, function (data) {
             if (data.status) {
-                var win = "<p>Spiller har bingo. " + 
-                    "Vinnertall: " + data.number + ".</p>";
-                var noWin = "<p>Har <strong>IKKE</strong> bingo.</p>";
+                var win = "<p><?php __('drawing.hasBingo', 'Player has bingo'); ?>. " + 
+                    "<?php __('drawing.wonOn', 'Won on'); ?>: " + data.number + ".</p>";
+                var noWin = "<p><?php __('drawing.noBingo', 'Has <strong>NOT</strong> bingo'); ?>.</p>";
                 var prependHTML = (data.won) ? won : noWin;
 
                 $("#modal").html(data.html).prepend(prependHTML)
                     .modal({clickClose: false})
-                    .append('<p>Kontrollnummer: ' + verification + '</p>')
+                    .append('<p><?php __('drawing.code', 'Verification code'); ?>: ' + verification + '</p>')
                     .append('<a href="#" rel="modal:close" class="button">OK</a>')
 
                 if(data.won) {
-                    $("#modal").append('<a href="#" id="registerWinner" class="button">Registrér vinner</a>');
+                    $("#modal").append('<a href="#" id="registerWinner" class="button"><?php __('drawing.registerWinner', 'Register winner'); ?></a>');
                     bindWinnerRegistration();
                 }
             }
@@ -133,25 +138,25 @@ $(document).ready(function () {
             $.getJSON('json.php?action=getWinners', function (data) {
                 if (data.status) {
                     var winners = data.winners;
-                    $("#modal").html('<a href="#close-modal" rel="modal:close" class="close-modal ">Close</a><h2>Vinnerregistrering</h2>');
+                    $("#modal").html('<a href="#close-modal" rel="modal:close" class="close-modal ">Close</a><h2><?php __('drawing.winnerRegistration', 'Winner registration'); ?></h2>');
                     for (var i = 0; i < winners.length; i++) {
-                        $("#modal").append('<div><p>Vinner: ' +
-                        winners[i].navn + ', ' + winners[i].sted + '<br /><label>Beløp:' + 
+                        $("#modal").append('<div><p><?php __('drawing.winner', 'Winner'); ?>: ' +
+                        winners[i].name + ', ' + winners[i].place + '<br /><label><?php __('drawing.price', 'Price'); ?>:' + 
                         '<input type="text" class="winner" id="winner-' + winners[i].vinnerid + 
-                        '" value="' + winners[i].utbetaling + '" /></label></div>');
+                        '" value="' + winners[i].price + '" /></label></div>');
                     }
 
-                    $("#modal").append('<div><br /><label>Navn: <input type="text" id="winnerName" /></label><br />' + 
-                        '<label>Sted: <input type="text" id="winnerPlace" /></label><br />' +
-                        '<label>Beløp: <input type="text" id="winnerPrice" /></label></div>')
+                    $("#modal").append('<div><br /><label><?php __('drawing.name', 'Name'); ?>: <input type="text" id="winnerName" /></label><br />' + 
+                        '<label><?php __('drawing.place', 'Place'); ?>: <input type="text" id="winnerPlace" /></label><br />' +
+                        '<label><?php __('drawing.price', 'Winner'); ?>: <input type="text" id="winnerPrice" /></label></div>')
 
                     autocompleteWinners();
 
-                    $("#modal").append('<div><a href="#" id="saveWinner" class="button">Lagre</a><a href="#" id="cancelWinner" class="button">Avbryt</a></div>');
+                    $("#modal").append('<div><a href="#" id="saveWinner" class="button"><?php __('drawing.save', 'Save'); ?></a><a href="#" id="cancelWinner" class="button"><?php __('drawing.cancel', 'Cancel'); ?></a></div>');
                     bindWinnerSaving();
                     $.modal.resize();
                 } else {
-                    $("#modal").html('<a href="#close-modal" rel="modal:close" class="close-modal ">Close</a><h2>En feil oppsto! Manuell registrering</h2>');
+                    $("#modal").html('<a href="#close-modal" rel="modal:close" class="close-modal ">Close</a><h2><?php __('drawing.errorSavingWInners', 'An error occured! Please start manual registration'); ?></h2>');
                 }
             });
         });
@@ -239,7 +244,7 @@ $(document).ready(function () {
                 if (data.status) {
                     $.modal.close();
                 } else {
-                    $("#modal").append("<h3>Feil: Begynn manuell registrering</h3>");
+                    $("#modal").append("<h3><?php __('drawing.errorSavingWInners', 'An error occured! Please start manual registration'); ?></h3>");
                 }
             }, "json");
         });
@@ -333,7 +338,7 @@ $(document).ready(function () {
     }
 
     function listWinners(winners) {
-        $("#modal").html('<h2>Vinnere fra forrige omgang</h2>' +
+        $("#modal").html('<h2><?php __('drawing.winners', 'Winners from previous round'); ?></h2>' +
             '<ul id="winners"></ul>' +
             '<a href="#" rel="modal:close" class="button">OK</a>');
 
@@ -344,7 +349,7 @@ $(document).ready(function () {
         for (var i = 0; i < winners.length; i++) {
             $("#winners").append('<li>' + winners[i].name + ", " + 
                 winners[i].place + 
-                ": Kroner " + winners[i].price + ",-</li>");
+                ": <?php __('drawing.currency', '$'); ?>" + winners[i].price + ",-</li>");
         }
 
         $.modal.resize();

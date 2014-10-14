@@ -1,7 +1,10 @@
+<?php
+require_once "l18n.php";
+?>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Trekking | Bingo</title>
+	<title><?php __('drawing.title', 'Drawing'); ?> | Bingo</title>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" type="text/css" href="css/jquery.modal.css" />
 	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
@@ -9,24 +12,25 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
 	<script src="js/jquery.modal.min.js"></script> <!-- from: https://github.com/kylefox/jquery-modal -->
-	<script src="js/drawing.js"></script>
+	<script src="js/drawing.php"></script>
 </head>
 <body>
-	<div class="noJs"><strong>Du må ha JavaScript for å bruke denne applikasjonen!</strong></div>
+	<div class="noJs"><strong><?php __('drawing.js', 'You must have JavaScript turned on in order to use this application.'); ?></strong></div>
 	<div id="drawn"></div>
 	
 	<div id="left">
 		<h2 id="name"></h2>
 		<div id="jackpotNumber"></div>
 		<div id="jackpot"></div>
-		<div id="countWrapper"><p>Antall trekk: <span id="count">0</span></p></div>
+		<div id="countWrapper"><p><?php __('drawing.count', 'Number of draws'); ?>: <span id="count">0</span></p></div>
 		<div id="rows"></div>
 		<div id="studio"></div>
-		<div><a href="#" class="button" id="newRound">Ny spilleomgang</a></div>
+		<div><a href="#" class="button" id="newRound"><?php __('drawing.newRound', 'New round'); ?></a></div>
+		<div><a href="#" class="button" id="newRow"><?php __('drawing.newRow', 'Increment row'); ?></a></div>
 	</div>
 
 	<div id="right" class="cf">
-		<div id="verifyWrapper"><p><input type="text" id="verificationCode" /><a href="#" class="button" id="verify">Kontrollér blokk</a></p></div>
+		<div id="verifyWrapper"><p><input type="text" id="verificationCode" /><a href="#" class="button" id="verify"><?php __('drawing.verify', 'Verify ticket'); ?></a></p></div>
 
 		<table id="drawnTable">	
 			<tr>
@@ -143,7 +147,7 @@
 
 		<div id="drawing">
 			<div id="numberIsWrapper"><p id="numberIs"></p></div>
-			<a href="#" id="draw" class="button">Trekk tall</a>
+			<a href="#" id="draw" class="button"><?php __('drawing.draw', 'Draw number'); ?></a>
 		</div>
 	</div>
 	<div id="modal" class="modal"></div>
