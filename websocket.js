@@ -2,12 +2,7 @@ var server = require('http').createServer(handler);
 var mysql = require("mysql");
 var io = require('socket.io').listen(server);
 
-// variable with all the connected sockets
-var connectionsArray = [];
-
 var port = 4000;
-
-var drawnNumbers = [];
 
 var connection = mysql.createConnection({
     host: 'localhost',
@@ -21,7 +16,7 @@ server.listen(port);
 
 function handler(req, res) {
     if (req.url == "/newNumber") {
-        gotNumber();
+        sendNumber();
     } else if (req.url == "/newRound") {
         newRound();
     }
@@ -30,19 +25,18 @@ function handler(req, res) {
     res.end();
 };
 
-function gotNumber() {
+function sendNumber() {
     var number = 0;
-    connection.query("SELECT number FROM drawing WHERE picked = 1 ORDER BY `when`", function (err, rows, fields) {
+    connection.query("SELECT number FROM drawing WHERE " +
+        "drawing.timestamp IS NOT NULL ORDER BY `timestamp`", function (err, rows, fields) {
         if (err) { return; }
 
-        drawnNumbers = [];
+        numbers = [];
         rows.forEach(function (row) {
-            drawnNumbers.push(row['number']);
+            numbers.push(row.number);
         });
 
-        var number = drawnNumbers[drawnNumbers.length - 1];
-
-        io.sockets.emit('number', number);
+        io.sockets.emit('numbers', numbers);
     });
 }
 
@@ -61,25 +55,7 @@ function newRound() {
 
 io.sockets.on('connection', function (socket) {
     socket.on('requestNumbers', function (data) {
-
-            connection.query("SELECT number FROM drawing WHERE picked = 1 ORDER BY `when`", function (err, rows, fields) {
-        
-        if(err) { return; }
-        
-        var numbers = [];
-        var isCollecting = (data === 0) ? true : false;
-        
-        rows.forEach(function (row) {
-            if (row == data) {
-                isCollecting = true;
-            }
-            
-            if (isCollecting) {
-                numbers.push(row.number);
-            }
-        });
-        socket.emit('numbers', numbers);
-            })
+        sendNumber();
     })
     .on("init", function(data) {
         newRound();

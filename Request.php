@@ -218,7 +218,7 @@ class Request {
         $number = $db->query($sql)->fetchColumn(0);
 
         // save it
-        $sql = "UPDATE drawing SET drawing.drawing.timestamp IS NOT NULL, drawing.timestamp = NOW() " .
+        $sql = "UPDATE drawing SET drawing.timestamp = NOW() " .
             "WHERE drawing.number = :number";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(":number", $number, PDO::PARAM_INT);
