@@ -1,65 +1,70 @@
 <?php
 
 class TicketTest extends PHPUnit_Framework_TestCase {
-	public function testRowSum() {
-		// Tests if each row has five numbers
+    public function __construct() {
+        require_once "database.php";
+        $this->db = $db;
+    }
 
-		$ticket = new Ticket(10000); // bogus
-		$text = explode("\n", shell_exec("python bingo.py"))[0];
-		$ticket->fromString($text);
+    public function testRowSum() {
+        // Tests if each row has five numbers
 
-		foreach ($ticket->getTicket() as $row) {
-			$count = 0;
-			foreach ($row as $number) {
-				if ($number != "") {
-					$count++;
-				}
-			}
-			$this->assertEquals(5, $count);
-		}
-	}
+        $ticket = new Ticket(null, $this->db);
+        $text = explode("\n", shell_exec("python bingo.py"))[0];
+        $ticket->fromString($text);
 
-	public function testColumnSum() {
-		// Tests if each column only has it's designated numbers
+        foreach ($ticket->getTicket() as $row) {
+            $count = 0;
+            foreach ($row as $number) {
+                if ($number != "") {
+                    $count++;
+                }
+            }
+            $this->assertEquals(5, $count);
+        }
+    }
 
-		$ticket = new Ticket(10000); // bogus
-		$text = explode("\n", shell_exec("python bingo.py"))[0];
-		$ticket->fromString($text);
+    public function testColumnSum() {
+        // Tests if each column only has it's designated numbers
 
-		$tens = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $ticket = new Ticket(null, $this->db);
+        $text = explode("\n", shell_exec("python bingo.py"))[0];
+        $ticket->fromString($text);
 
-		foreach ($ticket->getTicket() as $row) {
-			foreach ($row as $number) {
-				if ($number != "") {
-					$ten = ($number == 90) ? 8 : floor($number / 10);
-					$tens[$ten]++;
-				}
-			}
-		}
+        $tens = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-		foreach ($tens as $count) {
-			$this->assertLessThanOrEqual(3, $count);
-		}
-	}
+        foreach ($ticket->getTicket() as $row) {
+            foreach ($row as $number) {
+                if ($number != "") {
+                    $ten = ($number == 90) ? 8 : floor($number / 10);
+                    $tens[$ten]++;
+                }
+            }
+        }
 
-	public function testUniqueness() {
-		// Tests for uniqueness
+        foreach ($tens as $count) {
+            $this->assertLessThanOrEqual(3, $count);
+        }
+    }
 
-		$ticket = new Ticket(10000); // bogus
-		$text = explode("\n", shell_exec("python bingo.py"))[0];
-		$ticket->fromString($text);
+    public function testUniqueness() {
+        // Tests for uniqueness
 
-		$numbers = [];
+        $ticket = new Ticket(null, $this->db);
+        $text = explode("\n", shell_exec("python bingo.py"))[0];
+        $ticket->fromString($text);
 
-		foreach ($ticket->getTicket() as $row) {
-			foreach ($row as $number) {
-				if ($number != "") {
-					$numbers[] = $number;
-				}
-			}
-		}
+        $numbers = [];
 
-		$isUnique = count($numbers) === count(array_unique($numbers, SORT_NUMERIC));
-		$this->assertTrue($isUnique);
-	}
+        foreach ($ticket->getTicket() as $row) {
+            foreach ($row as $number) {
+                if ($number != "") {
+                    $numbers[] = $number;
+                }
+            }
+        }
+
+        $isUnique = count($numbers) === count(array_unique($numbers, SORT_NUMERIC));
+        $this->assertTrue($isUnique);
+    }
 }
