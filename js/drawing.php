@@ -8,6 +8,7 @@ $(document).ready(function () {
 
     var lastNumber = 0;
     var verification = 0;
+    var drawingInProgess = false;
 
     function init() {
         $.getJSON("json.php?action=gamestatus", function (data) {
@@ -35,12 +36,7 @@ $(document).ready(function () {
                         break;
 
                     case "round":
-                        for (var i = 0; i < data.numbers.length; i++) {
-                            var number = data.numbers[i];
-                            if (number == "") { break; }
-                            lastNumber = number;
-                            newNumber(number);
-                        }
+                        newNumbers(data.numbers);
 
                         $("#jackpotNumber").text("<?php __('drawing.jackpotNumber', 'Jackpot number'); ?>: " + data.jackpotNumber);
                         $("#jackpot").text("<?php __('drawing.jackpot', 'Jackpot'); ?>: <?php __('drawing.currency', '$'); ?>" + data.jackpot + ",-");
@@ -65,19 +61,31 @@ $(document).ready(function () {
     function drawNumber(e) {
         e.preventDefault();
 
-        $.getJSON("json.php?action=draw&last=" + lastNumber, function (data) {
+        if (drawingInProgess) { return; }
+        drawingInProgess = true;
+        $.getJSON("json.php?action=draw", function (data) {
             if (data.status) {
-                for (var i = 0; i < data.numbers.length; i++) {
-                    var number = data.numbers[i];
-                    lastNumber = number;
-                    newNumber(number);
-                }
+                newNumbers(data.numbers);
+                drawingInProgess = false;
+            } else {
+                drawingInProgess = false;
             }
         });
     }
 
     $("#draw").click(function (e) {
         drawNumber(e);
+    });
+
+    $("#newRow").click(function (e) {
+        e.preventDefault();
+
+        $.getJSON("json.php?action=newRow", function (data) {
+            if (data.success) {
+                $("#rows").text("<?php __('drawing.currentRows', 'Number of rows'); ?>: " + 
+                        data.rows);
+            }
+        });
     });
 
     $("#newRound").click(function (e) {
@@ -106,12 +114,12 @@ $(document).ready(function () {
                 var win = "<p><?php __('drawing.hasBingo', 'Player has bingo'); ?>. " + 
                     "<?php __('drawing.wonOn', 'Won on'); ?>: " + data.number + ".</p>";
                 var noWin = "<p><?php __('drawing.noBingo', 'Has <strong>NOT</strong> bingo'); ?>.</p>";
-                var prependHTML = (data.won) ? won : noWin;
+                var prependHTML = (data.won) ? win : noWin;
 
                 $("#modal").html(data.html).prepend(prependHTML)
                     .modal({clickClose: false})
                     .append('<p><?php __('drawing.code', 'Verification code'); ?>: ' + verification + '</p>')
-                    .append('<a href="#" rel="modal:close" class="button">OK</a>')
+                    .append('<a href="#" rel="modal:close" class="button">OK</a>');
 
                 if(data.won) {
                     $("#modal").append('<a href="#" id="registerWinner" class="button"><?php __('drawing.registerWinner', 'Register winner'); ?></a>');
@@ -142,7 +150,7 @@ $(document).ready(function () {
                     for (var i = 0; i < winners.length; i++) {
                         $("#modal").append('<div><p><?php __('drawing.winner', 'Winner'); ?>: ' +
                         winners[i].name + ', ' + winners[i].place + '<br /><label><?php __('drawing.price', 'Price'); ?>:' + 
-                        '<input type="text" class="winner" id="winner-' + winners[i].vinnerid + 
+                        '<input type="text" class="winner" id="winner-' + winners[i].id + 
                         '" value="' + winners[i].price + '" /></label></div>');
                     }
 
@@ -222,11 +230,11 @@ $(document).ready(function () {
             e.preventDefault();
 
             var winners = [];
-            $(".winners").each(function () {
-                var winnnerId = $(this).attr("id").split("-")[1];
+            $(".winner").each(function () {
+                var id = $(this).attr("id").split("-")[1];
                 var price = $(this).val();
                 winners.push({
-                    winnerId: winnnerId,
+                    id: id,
                     price: price
                 });
             });
@@ -266,14 +274,20 @@ $(document).ready(function () {
         return count;
     }
 
-    function newNumber(number) {
-        $("#number-" + number).text(number);
-        $("#numberIs").text(number);
+    function newNumbers(numbers) {
+        $("#count").text(numbers.length);
 
-        var separator = ($("#drawn").text() == "") ? "" : ", ";
-        $("#drawn").prepend(number + separator);
+        $(".number").text("");
+        $("#drawn").text("");
+        for (var i = 0; i < numbers.length; i++) {
+            $("#number-" + numbers[i]).text(numbers[i]);
+            lastNumber = numbers[i];
 
-        $("#count").text(countDrawn());
+            var separator = ($("#drawn").text() == "") ? "" : ", ";
+            $("#drawn").prepend(numbers[i] + separator);
+        }
+
+        $("#numberIs").text(lastNumber);
     }
 
     function bindStartGame() {

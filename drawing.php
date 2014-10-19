@@ -34,114 +34,114 @@ require_once "l18n.php";
 
 		<table id="drawnTable">	
 			<tr>
-				<td id="number-1"></td>
-				<td id="number-11"></td>
-				<td id="number-21"></td>
-				<td id="number-31"></td>
-				<td id="number-41"></td>
-				<td id="number-51"></td>
-				<td id="number-61"></td>
-				<td id="number-71"></td>
-				<td id="number-81"></td>
+				<td id="number-1" class="number"></td>
+				<td id="number-11" class="number"></td>
+				<td id="number-21" class="number"></td>
+				<td id="number-31" class="number"></td>
+				<td id="number-41" class="number"></td>
+				<td id="number-51" class="number"></td>
+				<td id="number-61" class="number"></td>
+				<td id="number-71" class="number"></td>
+				<td id="number-81" class="number"></td>
 			</tr>
 			<tr>
-				<td id="number-2"></td>
-				<td id="number-12"></td>
-				<td id="number-22"></td>
-				<td id="number-32"></td>
-				<td id="number-42"></td>
-				<td id="number-52"></td>
-				<td id="number-62"></td>
-				<td id="number-72"></td>
-				<td id="number-82"></td>
+				<td id="number-2" class="number"></td>
+				<td id="number-12" class="number"></td>
+				<td id="number-22" class="number"></td>
+				<td id="number-32" class="number"></td>
+				<td id="number-42" class="number"></td>
+				<td id="number-52" class="number"></td>
+				<td id="number-62" class="number"></td>
+				<td id="number-72" class="number"></td>
+				<td id="number-82" class="number"></td>
 			</tr>
 			<tr>
-				<td id="number-3"></td>
-				<td id="number-13"></td>
-				<td id="number-23"></td>
-				<td id="number-33"></td>
-				<td id="number-43"></td>
-				<td id="number-53"></td>
-				<td id="number-63"></td>
-				<td id="number-73"></td>
-				<td id="number-83"></td>
+				<td id="number-3" class="number"></td>
+				<td id="number-13" class="number"></td>
+				<td id="number-23" class="number"></td>
+				<td id="number-33" class="number"></td>
+				<td id="number-43" class="number"></td>
+				<td id="number-53" class="number"></td>
+				<td id="number-63" class="number"></td>
+				<td id="number-73" class="number"></td>
+				<td id="number-83" class="number"></td>
 			</tr>
 			<tr>
-				<td id="number-4"></td>
-				<td id="number-14"></td>
-				<td id="number-24"></td>
-				<td id="number-34"></td>
-				<td id="number-44"></td>
-				<td id="number-54"></td>
-				<td id="number-64"></td>
-				<td id="number-74"></td>
-				<td id="number-84"></td>
+				<td id="number-4" class="number"></td>
+				<td id="number-14" class="number"></td>
+				<td id="number-24" class="number"></td>
+				<td id="number-34" class="number"></td>
+				<td id="number-44" class="number"></td>
+				<td id="number-54" class="number"></td>
+				<td id="number-64" class="number"></td>
+				<td id="number-74" class="number"></td>
+				<td id="number-84" class="number"></td>
 			</tr>
 			<tr>
-				<td id="number-5"></td>
-				<td id="number-15"></td>
-				<td id="number-25"></td>
-				<td id="number-35"></td>
-				<td id="number-45"></td>
-				<td id="number-55"></td>
-				<td id="number-65"></td>
-				<td id="number-75"></td>
-				<td id="number-85"></td>
+				<td id="number-5" class="number"></td>
+				<td id="number-15" class="number"></td>
+				<td id="number-25" class="number"></td>
+				<td id="number-35" class="number"></td>
+				<td id="number-45" class="number"></td>
+				<td id="number-55" class="number"></td>
+				<td id="number-65" class="number"></td>
+				<td id="number-75" class="number"></td>
+				<td id="number-85" class="number"></td>
 			</tr>
 			<tr>
-				<td id="number-6"></td>
-				<td id="number-16"></td>
-				<td id="number-26"></td>
-				<td id="number-36"></td>
-				<td id="number-46"></td>
-				<td id="number-56"></td>
-				<td id="number-66"></td>
-				<td id="number-76"></td>
-				<td id="number-86"></td>
+				<td id="number-6" class="number"></td>
+				<td id="number-16" class="number"></td>
+				<td id="number-26" class="number"></td>
+				<td id="number-36" class="number"></td>
+				<td id="number-46" class="number"></td>
+				<td id="number-56" class="number"></td>
+				<td id="number-66" class="number"></td>
+				<td id="number-76" class="number"></td>
+				<td id="number-86" class="number"></td>
 			</tr>
 			<tr>
-				<td id="number-7"></td>
-				<td id="number-17"></td>
-				<td id="number-27"></td>
-				<td id="number-37"></td>
-				<td id="number-47"></td>
-				<td id="number-57"></td>
-				<td id="number-67"></td>
-				<td id="number-77"></td>
-				<td id="number-87"></td>
+				<td id="number-7" class="number"></td>
+				<td id="number-17" class="number"></td>
+				<td id="number-27" class="number"></td>
+				<td id="number-37" class="number"></td>
+				<td id="number-47" class="number"></td>
+				<td id="number-57" class="number"></td>
+				<td id="number-67" class="number"></td>
+				<td id="number-77" class="number"></td>
+				<td id="number-87" class="number"></td>
 			</tr>
 			<tr>
-				<td id="number-8"></td>
-				<td id="number-18"></td>
-				<td id="number-28"></td>
-				<td id="number-38"></td>
-				<td id="number-48"></td>
-				<td id="number-58"></td>
-				<td id="number-68"></td>
-				<td id="number-78"></td>
-				<td id="number-88"></td>
+				<td id="number-8" class="number"></td>
+				<td id="number-18" class="number"></td>
+				<td id="number-28" class="number"></td>
+				<td id="number-38" class="number"></td>
+				<td id="number-48" class="number"></td>
+				<td id="number-58" class="number"></td>
+				<td id="number-68" class="number"></td>
+				<td id="number-78" class="number"></td>
+				<td id="number-88" class="number"></td>
 			</tr>
 			<tr>
-				<td id="number-9"></td>
-				<td id="number-19"></td>
-				<td id="number-29"></td>
-				<td id="number-39"></td>
-				<td id="number-49"></td>
-				<td id="number-59"></td>
-				<td id="number-69"></td>
-				<td id="number-79"></td>
-				<td id="number-89"></td>
+				<td id="number-9" class="number"></td>
+				<td id="number-19" class="number"></td>
+				<td id="number-29" class="number"></td>
+				<td id="number-39" class="number"></td>
+				<td id="number-49" class="number"></td>
+				<td id="number-59" class="number"></td>
+				<td id="number-69" class="number"></td>
+				<td id="number-79" class="number"></td>
+				<td id="number-89" class="number"></td>
 			</tr>
 			<tr>
-				<td id="number-10"></td>
-				<td id="number-20"></td>
-				<td id="number-30"></td>
-				<td id="number-40"></td>
-				<td id="number-50"></td>
-				<td id="number-60"></td>
-				<td id="number-70"></td>
-				<td id="number-80"></td>
-				<td id="number-90"></td>
+				<td id="number-10" class="number"></td>
+				<td id="number-20" class="number"></td>
+				<td id="number-30" class="number"></td>
+				<td id="number-40" class="number"></td>
+				<td id="number-50" class="number"></td>
+				<td id="number-60" class="number"></td>
+				<td id="number-70" class="number"></td>
+				<td id="number-80" class="number"></td>
+				<td id="number-90" class="number"></td>
 			</tr>
 		</table>
 

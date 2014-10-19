@@ -1,13 +1,21 @@
 <?php
 
 class Ticket {
-    public function __construct($verification) {
+    public function __construct($verification, $db) {
+        if (is_null($verification)) {
+            return;
+        }
+        
         if ($verification <= 10000 && $verification >= 99999) {
             throw new Exception("Invalid verification for ticket");
         }
 
         $this->verification = $verification;
-        $this->ticket = [];
+
+        $stmt = $db->prepare("SELECT ticket FROM tickets WHERE id = :id");
+        $stmt->bindValue(":id", $verification, PDO::PARAM_INT);
+        $stmt->execute();
+        $this->fromString($stmt->fetchColumn(0));
     }
 
     public function getNumberRow($number) {
@@ -60,7 +68,7 @@ class Ticket {
         foreach (explode('-', $string) as $row) {
           $ticket[$count] = [];
           foreach (explode(';', $row) as $column) {
-            array_push($ticket[$count], $column);
+            array_push($ticket[$count], (int)$column);
           }
           $count += 1;
         }

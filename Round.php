@@ -1,9 +1,9 @@
 <?php
 
 class Round {
-    public function __construct($db) {
+    public function __construct($db, $id = null) {
         $this->db = $db;
-        $this->fromDb($db);
+        $this->fromDb($db, $id);
     }
 
     public function draw() {
@@ -27,6 +27,9 @@ class Round {
 
         // the number of rows completed
         $completedRows = 0;
+
+        // the last row with a valid number
+        $winningRow = 0;
         
         foreach ($this->drawnNumbers as $number) {
             $row = $ticket->getNumberRow($number);
@@ -34,6 +37,7 @@ class Round {
             // number is located in a row in the ticket
             if (!is_null($row)) {
                 $numbers[$row][] = $number;
+                $winningRow = $row;
 
                 if (++$rows[$row] == 5) {
                     $winningNumbers[$completedRows] = $number;
@@ -45,12 +49,14 @@ class Round {
         if ($completedRows >= $this->rows) {
             return ["win" => True,
                     "numbers" => $numbers,
-                    "winningNumbers" => $winningNumbers];
+                    "winningNumbers" => $winningNumbers,
+                    "winningRow" => $winningRow];
         }
         else {
             return ["win" => False,
                     "numbers" => $numbers,
-                    "winningNumbers" => $winningNumbers];
+                    "winningNumbers" => $winningNumbers,
+                    "winningRow" => $winningRow];
         }
     }
 
@@ -66,20 +72,18 @@ class Round {
     public function generateHTML(Ticket $ticket, array $winningNumbers) {
         $combined = [];
         $ticket = $ticket->getTicket();
-        for ($row= 0; $row < count($ticket); $row++) {
+        for ($row = 0; $row < count($ticket); $row++) {
             $combined[$row] = [];
             for ($number = 0; $number < count($ticket[$row]); $number++) {
-                if($ticket[$row][$number] == "") {
+                if($ticket[$row][$number] == 0) {
                     $combined[$row][$number] = [" ", true];
+                } elseif (in_array($ticket[$row][$number], $winningNumbers[$row])) {
+                    $combined[$row][$number] = [$ticket[$row][$number], true];
                 }
                 else {
                     $combined[$row][$number] = [$ticket[$row][$number], false];
                 }
             }
-        }
-
-        foreach ($winningNumbers as $number) {
-            $combined[$number['row']][$number['position']][1] = true;
         }
 
         $html = "<table>\n";
@@ -131,13 +135,21 @@ class Round {
         return $this->jackpotNumber;
     }
 
-    private function fromDb($db) {
+    private function fromDb($db, $id) {
         // to be cleaned up with new db schema
 
-        $sql = "SELECT * FROM rounds ORDER BY id DESC LIMIT 1";
-        $round = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+        if (!is_null($id)) {
+            $sql = "SELECT * FROM rounds WHERE id = :id";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
+            $round = $stmt->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $sql = "SELECT * FROM rounds ORDER BY id DESC LIMIT 1";
+            $round = $db->query($sql)->fetch(PDO::FETCH_ASSOC);
+        }
         
-        $sql = "SELECT drawing.number FROM drawing WHERE drawing.timestamp IS NOT NULL ORDER BY drawing.timestamp"
+        $sql = "SELECT drawing.number FROM drawing WHERE drawing.timestamp IS NOT NULL ORDER BY drawing.timestamp";
         $drawnNumbers = $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         $numbers = [];
         foreach ($drawnNumbers as $number) {
@@ -159,20 +171,26 @@ class Round {
             "WHERE winners.round = :round AND " .
             "winners.row = :row ORDER BY winners.id");
         $stmt->bindParam(":round", $round['id'], PDO::PARAM_INT);
-        $stmt->bindParam(":rows", $round['row'], PDO::PARAM_INT);
+        $stmt->bindParam(":row", $round['current_row'], PDO::PARAM_INT);
         $stmt->execute();
         $winners = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $this->name = $round['name'];
+        $stmt = $db->prepare("SELECT count(rounds.id)  FROM rounds WHERE game = :game AND type = 'R'");
+        $stmt->bindValue(":game", $round['game']);
+        $stmt->execute();
+        $name = $stmt->fetchColumn(0);
+
+        $this->name = $name;
         $this->type = $round['type'];
-        $this->rows = $round['rows'];
+        $this->rows = $round['current_row'];
         $this->jackpotNumber = $jackpotNumber;
         $this->jackpot = $jackpot;
         $this->winners = $winners;
         $this->id = $round['id'];
+        $this->drawnNumbers = $numbers;
     }
 
     public function save() {
-
+        $sql = "UPDATE round SET  WHERE id = :id";
     }
 }
