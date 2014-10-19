@@ -81,7 +81,7 @@ $(document).ready(function () {
         e.preventDefault();
 
         $.getJSON("json.php?action=newRow", function (data) {
-            if (data.success) {
+            if (data.status) {
                 $("#rows").text("<?php __('drawing.currentRows', 'Number of rows'); ?>: " + 
                         data.rows);
             }

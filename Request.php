@@ -284,24 +284,27 @@ class Request {
         $id =$round->getId();
         $sql = "SELECT winners.id, winners.price, players.name, places.place FROM winners " .
             "INNER JOIN players ON players.id = winners.player INNER JOIN places ON " .
-            "places.id = players.place WHERE round = :round";
+            "places.id = players.place WHERE round = :round AND winners.row = :row";
 
         $stmt = $db->prepare($sql);
         $stmt->bindValue(":round", $id, PDO::PARAM_INT);
+        $stmt->bindValue(":row", $round->getRows(), PDO::PARAM_INT);
         $stmt->execute();
 
         return json_encode(['status' => true, 'winners' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
     }
 
     static public function saveWinners($db) {
-        $sql = "UPDATE winners SET winners.price = :price, leftToPay = :price WHERE winners.id = :id";
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(":price", $price, PDO::PARAM_INT);
-        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-        foreach ($_POST['winners'] as $winner) {
-            $price = $winner['price'];
-            $id = $winner['id'];
-            $stmt->execute();
+        if (is_array($_POST['winners'])) {
+            $sql = "UPDATE winners SET winners.price = :price, leftToPay = :price WHERE winners.id = :id";
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(":price", $price, PDO::PARAM_INT);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            foreach ($_POST['winners'] as $winner) {
+                $price = $winner['price'];
+                $id = $winner['id'];
+                $stmt->execute();
+            }
         }
 
         $sql = "SELECT players.id, places.place FROM players INNER JOIN places ON " .
